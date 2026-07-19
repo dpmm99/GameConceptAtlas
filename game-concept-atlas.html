@@ -26943,6 +26943,7 @@ const GROUPS = [
   {id:'mg_combat', name:'Combat Mechanics', parent:'d_mechanics', kind:'group', select:'multi'},
   {id:'mg_character', name:'Character Mechanics', parent:'d_mechanics', kind:'group', select:'multi'},
   {id:'mg_build', name:'Build Mechanics', parent:'d_mechanics', kind:'group', select:'multi'},
+  {id:'mg_loot', name:'Loot & Rewards', parent:'d_mechanics', kind:'group', select:'multi'},
   {id:'mg_world', name:'World Mechanics', parent:'d_mechanics', kind:'group', select:'multi'},
   {id:'mg_construction', name:'Construction Mechanics', parent:'d_mechanics', kind:'group', select:'multi'},
   {id:'mg_meta', name:'Metagame Mechanics', parent:'d_mechanics', kind:'group', select:'multi'},
@@ -27056,7 +27057,7 @@ C('g_visualnovel','Visual novel','d_genre','Story-driven fiction told through te
 C('g_walkingsim','Walking sim','d_genre','Slow, exploratory traversal foregrounding atmosphere over challenge.',{deps:['sy_envstory','sy_leveldesign'],rel:['g_adventure'],diff:2}),
 C('g_word','Word','d_genre','Vocabulary and language manipulation as the core mechanic.',{deps:['sy_textrender'],rel:['g_puzzle','g_trivia','g_partygame'],diff:3}),
 C('g_autobattler','Auto-battler','d_genre','Units are drafted and positioned, then combat resolves automatically without direct control.',{rel:['mc_drafting','dm_pace_realtime','dm_setup_modular'],diff:4}),
-C('g_ccg','Card Battler','d_genre','Competitive card-vs-card combat built around deck construction as the whole game, not just a sub-mechanic.',{rel:['mc_deckbuild','dim_setup_constructed'],diff:4}),
+C('g_ccg','Card Battler','d_genre','Competitive card-vs-card combat built around deck construction as the whole game, not just a sub-mechanic.',{rel:['mc_deckbuild','dm_setup_constructed'],diff:4}),
 C('g_farmsim','Farming Sim','d_genre','Planting, tending, and harvesting crops on a plot as the central loop.',{rel:['mc_resourceproduce','fl_comfy','dm_loop_minutes'],diff:4}),
 C('g_lifesim','Life Sim','d_genre','Simulating a character\u2019s daily routines, relationships, and needs in an open-ended way.',{rel:['th_sliceoflife','dm_prog_persistent','fl_comfy'],diff:4}),
 C('g_tycoon','Tycoon','d_genre','Running and scaling a commercial enterprise for profit and growth.',{rel:['mc_citybuild','sy_balancing'],diff:5}),
@@ -27097,7 +27098,7 @@ C('th_superhero_scale_street','Street-Level','th_superhero','The hero sticks to 
 C('th_superhero_scale_world','World-Level','th_superhero','The hero protects nations or the entire planet.',{diff:1, rel:['th_fantasy_high','th_fantasy_low','sy_narrative','mc_worldenv_ref'], persp:['designer','artist','producer']}),
 C('th_superhero_scale_cosmic','Cosmic-Level','th_superhero','The hero protects multiple worlds, star systems, galaxies, or the universe.',{diff:1, rel:['th_fantasy_high','th_fantasy_low','sy_narrative','mc_worldenv_ref'], persp:['designer','artist','producer']}),
 C('th_superhero_villains','Supervillain Rivals','th_superhero','Recurring antagonists whose schemes structure the ongoing story.',{deps:['sy_narrative'],rel:['mc_nemesis','th_superhero_identity'],diff:1}),
-C('th_scifi','Sci-Fi','d_theme','Speculative technology and space as the driving premise.',{rel:['th_cyberpunk','th_postapoc','mc_vehiclecombat'],diff:3,persp:['artist','designer']}),
+C('th_scifi','Sci-Fi','d_theme','Speculative technology and space as the driving premise.',{rel:['th_cyberpunk','th_postapoc','g_vehiclecombat'],diff:3,persp:['artist','designer']}),
 C('th_scifi_contact','First Contact','th_scifi','The premise centers on encountering a genuinely alien other.',{deps:['sy_narrative'],rel:['th_scifi_hard','th_scifi_opera','th_horror_cosmic'],diff:0}),
 C('th_scifi_hard','Hard Sci-Fi','th_scifi','Speculation grounded closely in plausible science.',{deps:[],rel:['th_scifi_opera','g_simulation'],diff:0,persp:['designer','programmer','player']}),
 C('th_scifi_opera','Space Opera','th_scifi','Sweeping, dramatic adventure across a galaxy-spanning canvas.',{diff:0,rel:['g_rpg','g_rts','g_simulation']}),
@@ -27126,8 +27127,8 @@ C('th_alien','Alien Invasion','d_theme','Hostile extraterrestrial forces threate
 C('th_aquatic','Undersea','d_theme','Ocean depths and underwater civilizations as setting.',{diff:2}),
 
 /* ================= FEEL & TONE (parent: d_feel) ================= */
-C('fl_comfy','Cozy','d_feel','Low-stakes warmth; the game wants you relaxed, not tense.',{deps:[],rel:['fl_zen','fl_meditative','fl_playful','mc_idle','mc_housing'],diff:0,persp:['designer','artist','producer']}),
-C('fl_tense','Tense','d_feel','Sustained pressure that keeps the player alert and uneasy.',{deps:[],rel:['fl_eerie','fl_rushed','mc_stealth','mc_survival'],diff:3,persp:['designer','artist','qa']}),
+C('fl_comfy','Cozy','d_feel','Low-stakes warmth; the game wants you relaxed, not tense.',{deps:[],rel:['fl_zen','fl_meditative','fl_playful','g_idle','mc_housing'],diff:0,persp:['designer','artist','producer']}),
+C('fl_tense','Tense','d_feel','Sustained pressure that keeps the player alert and uneasy.',{deps:[],rel:['fl_eerie','fl_rushed','g_stealth','g_survival'],diff:3,persp:['designer','artist','qa']}),
 C('fl_whimsical','Whimsical','d_feel','Playful, light-hearted logic that doesn\u2019t take itself seriously.',{diff:0,rel:['fl_playful','fl_comfy'],persp:['artist','designer']}),
 C('fl_grim','Grim','d_feel','A heavy, bleak mood that colors every choice.',{deps:[],rel:['fl_tense','th_horror','th_postapoc'],diff:2}),
 C('fl_empowering','Empowering','d_feel','The player is made to feel increasingly capable and in control.',{deps:[],rel:['fl_triumphant','fl_playful','dm_diffc_gentle'],diff:2}),
@@ -27135,7 +27136,7 @@ C('fl_melancholic','Melancholic','d_feel','A wistful, bittersweet sadness runs t
 C('fl_chaotic','Chaotic','d_feel','Unpredictable, high-energy swings that resist careful planning.',{deps:[],rel:['fl_rushed','fl_tense','mc_pushluck'],diff:3}),
 C('fl_meditative','Meditative','d_feel','Slow, repetitive, calming rhythms invite a quiet focus.',{deps:[],rel:['fl_zen','fl_comfy','g_walkingsim','g_idle'],diff:0}),
 C('fl_triumphant','Triumphant','d_feel','Big, earned highs that reward sustained effort.',{deps:[],rel:['fl_empowering','fl_tense','dm_diffc_gentle'],diff:2}),
-C('fl_eerie','Eerie','d_feel','An unsettling wrongness sits just beneath the surface.',{deps:[],rel:['th_horror','fl_tense','g_horror','mc_stealth'],diff:2}),
+C('fl_eerie','Eerie','d_feel','An unsettling wrongness sits just beneath the surface.',{deps:[],rel:['th_horror','fl_tense','g_horror','g_stealth'],diff:2}),
 C('fl_nostalgic','Nostalgic','d_feel','Deliberately evokes a specific remembered era or feeling.',{deps:[],rel:['as_pixel','as_watercolor','as_claymation','fl_comfy','fl_melancholic','dm_theme_integrated'],diff:1,persp:['designer','artist','producer']}),
 C('fl_zen','Zen','d_feel','Minimal friction and low pressure, closer to a calm ritual.',{deps:[],rel:['fl_comfy','fl_meditative','dm_cx_light','dm_fail_none'],diff:2}),
 C('fl_rushed','Rushed','d_feel','Constant urgency; there\u2019s never quite enough time.',{deps:[],rel:['fl_tense','fl_chaotic','dm_pace_realtime','dm_loop_seconds'],diff:1}),
@@ -27201,7 +27202,7 @@ C('dm_comp_verbal','Verbal','dim_component','Relies on speech, memory, or logic 
 
 C('dm_pc_solo','Solo','dim_playercount','Designed for exactly one player.',{rel:['dm_align_solo'],diff:0,persp:null}),
 C('dm_pc_h2h','Head-to-head (2p)','dim_playercount','Designed specifically around a single opposing pair.',{deps:['mc_multiplayer'],diff:2,rel:['sy_multiplayer_net','dm_align_comp']}),
-C('dm_pc_small','Small Group (3\u20136)','dim_playercount','Tuned for a small table or party of players.',{deps:['mc_multiplayer'],rel:['sy_multiplayer_net','mc_partygame','mc_coop','mc_pvp'],diff:2}),
+C('dm_pc_small','Small Group (3\u20136)','dim_playercount','Tuned for a small table or party of players.',{deps:['mc_multiplayer'],rel:['sy_multiplayer_net','g_partygame','mc_coop','mc_pvp'],diff:2}),
 C('dm_pc_massive','Massive-scale (7+)','dim_playercount','Designed to hold up with a crowd or a persistent population.',{deps:['mc_multiplayer'],rel:['sy_multiplayer_net','mc_guilds','sy_matchmaking','dm_align_team','dm_prog_persistent'],diff:4,persp:['programmer','designer','producer','qa']}),
 
 C('dm_align_solo','Solo','dim_alignment','A single player plays against the game or their own past results.',{diff:0,rel:['dm_pc_solo','dm_prog_standalone','dm_prog_campaign']}),
@@ -27310,15 +27311,15 @@ C('sy_save_manual','Manual Save','dim_save','Lets the player explicitly write th
 C('sy_save_checkpoint','Checkpoint Save','dim_save','Progress is only written when the player physically reaches a designated save point, such as a campfire or shrine.',{rel:['sy_save_auto_timer','sy_save_auto_event','sy_save_manual','g_roguelike'],mutex:['dm_prog_persistent'],diff:2}),
 C('sy_save_auto_timer','Auto-save (Timer)','dim_save','Automatically writes game state to disk at regular time intervals regardless of player action.',{rel:['sy_save_auto_event','sy_save_manual','sy_save_checkpoint'],mutex:['dm_prog_persistent'],diff:2}),
 C('sy_save_auto_event','Auto-save (Events)','dim_save','Automatically writes game state when the player crosses specific designer-placed triggers, such as entering a new area or finishing an objective.',{rel:['sy_save_auto_timer','sy_save_manual','sy_save_checkpoint'],mutex:['dm_prog_persistent'],diff:3}),
-//TODO: Option of limited save slots
-//TODO: loot mechanics! Get loot frequently or rarely, various levels of loot rarity limits, loot from enemies, from missions and bonus goals and achievements, from locations, from timers/turns (though that's usually called 'income')... types of loot: ingredients, equipment, consumables (buff/debuff/revive/temporary ability/survival like food or water), slottables (buffs *to* equipment, mentioned in this app as Enhancements because of City of Heroes), cosmetics (equipment is often ALSO cosmetic), keys/triggers (most Metroid equipment are ALSO keys, and items are often story/cutscene/area-unlocking triggers that don't literally have to be inserted into a door), currencies (not that different from pure ingredients)...
-/* ================= MECHANICS: Multiplayer (mg_multiplayer) ================= */
+C('sy_save_slots','Limited save slots', 'dim_save', 'The player can only maintain a small number of save files at once, forcing them to choose which progress to preserve.',{rel:['sy_save_ironman','sy_save_manual'],mutex:['dm_prog_persistent'],diff:1}),
+
+    /* ================= MECHANICS: Multiplayer (mg_multiplayer) ================= */
 C('mc_multiplayer','Multiplayer base','mg_multiplayer','Mechanics supporting more than one human participant.',{deps:[],rel:[],diff:4}),
-C('mc_coop','Cooperative play','mg_multiplayer','Objectives designed for players to tackle together.',{deps:['mc_multiplayer'],rel:['mc_teambased','mc_pvp'],diff:0}),
-C('mc_coop_asym','Asymmetric co-op','mc_coop','Teammates play meaningfully different roles toward one goal.',{deps:['mc_coop'],rel:['mc_archetype','dm_align_coop'],diff:5,persp:['designer','programmer','qa']}), //TODO: This step feels weird to me. Like maybe some of the individual options can be divorced from "co-op", put in a different section entirely (like split-screen and drop-in/drop-out--those could both be co-op or counter-op).
-C('mc_coop_dropin','Drop-in/drop-out co-op','mc_coop','Players can join or leave a session mid-activity freely.',{deps:['mc_coop'],rel:['mc_coop_net','mc_instances','mc_worldbosses'],diff:5}),
-C('mc_coop_local','Shared-screen co-op','mc_coop','Multiple players share one screen and one local device.',{deps:['mc_coop','sy_controls'],rel:['mc_coop_net','sy_hud'],diff:0,persp:['programmer','designer','qa']}),
-C('mc_coop_net','Networked co-op','mc_coop','Co-op played across separate devices over a network.',{deps:['sy_multiplayer_net'],rel:['mc_coop_dropin','sy_voip'],diff:4,persp:['programmer','designer','qa']}),
+C('mc_coop','Cooperative objectives','mg_multiplayer','Objectives designed for players to tackle together as a team.',{deps:['mc_multiplayer'],rel:['mc_teambased','mc_pvp'],diff:0}),
+C('mc_asymroles','Asymmetric roles','mg_multiplayer','Players have meaningfully different roles, perspectives, or win conditions.',{deps:['mc_multiplayer'],rel:['mc_archetype','dm_align_coop','dm_align_comp'],diff:5,persp:['designer','programmer','qa']}),
+C('mc_dropin','Drop-in/drop-out','mg_multiplayer','Players can join or leave a session mid-activity without restarting.',{deps:['mc_multiplayer'],rel:['mc_networked','mc_instances','mc_worldbosses'],diff:5}),
+C('mc_sharedscreen','Shared-screen','mg_multiplayer','Multiple players share one screen and one local device.',{deps:['mc_multiplayer','sy_controls'],rel:['mc_networked','sy_hud'],diff:0,persp:['programmer','designer','qa']}),
+C('mc_networked','Networked play','mg_multiplayer','Play across separate devices over a network.',{deps:['sy_multiplayer_net'],rel:['mc_dropin','sy_voip'],diff:0,persp:['programmer','designer','qa']}),
 C('mc_pvp','PvP combat','mg_multiplayer','Direct competitive combat between players.',{deps:['mc_multiplayer'],rel:['mc_pvp_arenas','mc_teambased','mc_realtime_combat'],diff:4}),
 C('mc_pvp_arenas','PvP arenas','mc_pvp','Dedicated matchmade spaces for structured player-vs-player combat.',{deps:['mc_pvp','sy_matchmaking'],rel:['mc_instances','sy_anticheat','sy_balancing','sy_leaderboards'],diff:5}),
 C('mc_teambased','Team-based gameplay','mg_multiplayer','Objectives designed around coordinated groups rather than solo play.',{deps:['mc_multiplayer'],rel:['mc_coop','mc_pvp'],diff:2}),
@@ -27338,7 +27339,7 @@ C('mc_unlockstats','Unlockable stats','mg_progression','Attributes hidden until 
 C('mc_hiddenclass','Hidden classes','mg_progression','Class or role options withheld until discovered through play.',{deps:['mc_charprogression'],rel:['mc_unlockstats','mc_archetype'],diff:3,persp:['designer','programmer']}),
 C('mc_learnbydoing','Skill proficiency through use','mg_progression','Abilities improve the more a player actually exercises them.',{deps:['mc_charprogression'],rel:['mc_createbytrying','mc_xp','mc_respec'],diff:3,persp:['designer','programmer']}),
 C('mc_createbytrying','Creating skills by attempting actions','mg_progression','New skills are learned by the act of attempting them in-world.',{deps:['mc_charprogression'],rel:['mc_learnbydoing','dm_onb_learnbydoing','mc_hiddenclass'],diff:4,persp:['designer','programmer','qa']}),
-C('mc_legacy','\u2018Legacy\u2019 mechanics','mg_progression','Permanent physical or save-state changes that persist forever.',{deps:['sy_save_system'],rel:['dm_prog_legacy','mc_respec','mc_campaign'],diff:4}),
+C('mc_legacy','\u2018Legacy\u2019 mechanics','mg_progression','Permanent physical or save-state changes that persist forever.',{deps:['sy_save_system'],rel:['dm_prog_legacy','mc_respec','dm_prog_campaign'],diff:4}),
 C('mc_deckbuild','Deck-building mechanic','mg_progression','Players assemble and refine a personal card pool as they play.',{deps:[],rel:['mc_xp','mc_patternbuild','g_roguelike','g_roguelite'],diff:5}),
 C('mc_workerplace','Worker placement','mg_progression','Assigning limited units to claim actions before opponents can.',{rel:['mc_areacontrol','mc_tableaubuild','mc_enginebuild'],diff:4}),
 C('mc_areacontrol','Area control','mg_progression','Contesting and holding regions for ongoing benefit.',{rel:['mc_workerplace','mc_routebuild','mc_resourceproduce'],diff:4}),
@@ -27354,7 +27355,7 @@ C('mc_networkbuild','Network building','mg_progression','Assembling interconnect
 /* ================= MECHANICS: Combat (mg_combat) ================= */
 C('mc_realtime_combat','Real-time combat','mg_combat','Combat resolved continuously rather than in discrete turns.',{deps:['sy_controls','dm_pace_realtime'],rel:['mc_targeted','mc_statuseffects','mc_buffsdebuffs','sy_juice'],diff:5}),
 C('mc_targeted','Targeted abilities','mg_combat','Skills that require selecting a specific target or location.',{deps:['sy_hud'],rel:['mc_statuseffects','mc_realtime_combat','sy_enemyai'],diff:4,persp:['designer','programmer','qa']}),
-C('mc_statuseffects','Status effects','mg_combat','Temporary conditions applied to combatants that alter their state.',{deps:[],rel:['mc_buffsdebuffs','mc_realtime_combat','mc_turnbased'],diff:4,persp:['designer','programmer']}),
+C('mc_statuseffects','Status effects','mg_combat','Temporary conditions applied to combatants that alter their state.',{deps:[],rel:['mc_buffsdebuffs','mc_realtime_combat','g_turnbased'],diff:4,persp:['designer','programmer']}),
 C('mc_buffsdebuffs','Buffs & debuffs','mg_combat','Directional status effects that raise or lower combat performance.',{deps:['mc_statuseffects'],rel:['mc_enhancement','mc_powersets'],diff:3,persp:['programmer','designer','qa']}),
 C('mc_pve','PvE combat','mg_combat','Player-versus-environment fights against AI-controlled enemies.',{deps:['sy_enemyai'],rel:['mc_pvp','mc_worldbosses'],diff:3}),
 C('mc_enhancement','Enhancement system','mg_combat','Secondary layer of gear or slot-based power tuning.',{deps:['mc_charprogression'],rel:['mc_crafting','mc_respec','mc_archetype'],diff:5,persp:['designer','programmer','qa']}),
@@ -27378,6 +27379,23 @@ C('mc_ps_elemental','Elemental powerset','mc_powersets','Abilities themed around
 C('mc_ps_tech','Tech powerset','mc_powersets','Abilities themed around invented devices and gadgets.',{diff:4, rel:['mc_ps_elemental','mc_ps_mystic','mc_ps_brawler','mc_crafting']}),
 C('mc_ps_mystic','Mystic powerset','mc_powersets','Abilities themed around magic or supernatural forces.',{deps:['mc_powersets'],rel:['mc_ps_elemental','mc_statuseffects'],diff:3}),
 C('mc_ps_brawler','Brawler powerset','mc_powersets','Abilities themed around raw physical prowess.',{deps:[],rel:['mc_statuseffects','sy_juice'],diff:6,persp:['designer','programmer','artist','qa']}),
+
+/* ================= MECHANICS: Loot & Rewards (mg_loot) ================= */
+C('mc_loot','Loot drops','mg_loot','Acquiring items from the game world as rewards for play.',{deps:[],rel:['mc_charprogression','mc_crafting'],diff:2}),
+C('mc_loot_frequent','Frequent loot','mg_loot','Items drop often, keeping inventory management and reward feedback constant, likely necessitating more UI components to assist with loot management.',{deps:['mc_loot'],rel:['mc_loot_rarity','mc_resourceproduce','mc_crafting'],mutex:['mc_loot_rare'],diff:1}),
+C('mc_loot_rare','Sparse loot','mg_loot','Items drop sparingly, making each find feel significant.',{deps:['mc_loot'],rel:['mc_loot_rarity','mc_loot_frequent'],diff:0}),
+C('mc_loot_rarity','Rarity tiers','mg_loot','Items are graded into quality bands from common to legendary, shaping pursuit and progression. The rarest finds are often hyped up via extra juice.',{deps:['mc_loot'],rel:['sy_juice','mc_charprogression','mc_enhancement','dm_diffc_spiky','sy_balancing'],diff:1}),
+C('mc_loot_enemy','Enemy drops','mg_loot','Defeated enemies yield items as part of their defeat resolution.',{deps:['mc_loot'],rel:['mc_pve','mc_pvp','mc_worldbosses','mc_loot_rarity'],diff:1}),
+C('mc_loot_mission','Mission rewards','mg_loot','Completing objectives, quests, or achievements grants items, potentially even curated item packages.',{deps:['mc_loot','mc_missionstruct'],rel:['mc_xp','sy_narrative','mc_loot_rarity'],diff:2}),
+C('mc_loot_discovery','Discovery loot','mg_loot','Items are found by exploring the world, opening containers, or uncovering hidden caches.',{deps:['mc_loot'],rel:['mc_open_world','mc_fogofwar','mc_loot_rarity'],diff:2}),
+C('mc_loot_timed','Timed rewards','mg_loot','Items are granted on a schedule, after real-time delays, or at the end of turns. This is often just referred to as income or resource production.',{deps:['mc_loot'],rel:['g_idle','mc_resourceproduce','sy_seasons','sy_eventsched'],diff:1}),
+C('mc_item_equipment','Equipment','mg_loot','Loot includes gear that provides stats, defenses, or functional abilities when equipped.',{deps:[],rel:['mc_charprogression','mc_enhancement','mc_crafting','mc_respec'],diff:4}),
+C('mc_item_ingredients','Ingredients','mg_loot','Loot includes raw materials consumed by crafting to produce other items.',{deps:['mc_crafting'],rel:['mc_resourceproduce','g_factorysim'],diff:1}),
+C('mc_item_consumables','Consumables','mg_loot','Loot includes single-use items that grant temporary buffs, healing, revives, or survival resources.',{deps:[],rel:['mc_statuseffects','mc_buffsdebuffs','g_survival'],diff:2}),
+C('mc_item_enhancements','Enhancement items','mg_loot','Loot includes slottable upgrades that improve existing equipment after acquisition.',{deps:['mc_enhancement'],rel:['mc_crafting','mc_respec'],diff:2}),
+C('mc_item_cosmetics','Cosmetics','mg_loot','Loot includes purely visual modifications to characters, gear, or environments.',{deps:[],rel:['mc_costumes','mc_charcustom','sy_monetization'],diff:3}),
+C('mc_item_keys','Keys & triggers','mg_loot','Loot includes items that unlock new areas, advance the story, or gate specific abilities.',{deps:[],rel:['mc_charprogression','mc_worldenv_ref','sy_narrative','sy_unlockables'],diff:1}),
+C('mc_item_currencies','Currencies','mg_loot','Loot includes spendable numerical resources that can be exchanged for goods or services.',{deps:[],rel:['mc_crafting','mc_trading','dm_econ_single','dm_econ_multi'],diff:2}),
 
 /* ================= MECHANICS: World (mg_world) ================= */
 C('mc_open_world','Open-world exploration','mg_world','A continuous traversable world encouraging free-form discovery.',{deps:['sy_colliders','mc_worldenv_ref'],rel:['mc_basebuild','mc_dynamicevents','mc_missionstruct'],diff:7}),
@@ -27500,7 +27518,7 @@ C('sy_rollback_tb','Turn-Based Rollback','sg_recording','Rewinds to undo discret
 C('sy_replay','Replay system','sg_recording','Recording and replaying past sessions for review or spectating.',{deps:[],rel:['sy_spectator','sy_logging','sy_anticheat'],diff:6,persp:['programmer','qa','player']}),
 
 /* ================= SYSTEMS: Netcode (sg_netcode) ================= */
-C('sy_multiplayer_net','Multiplayer netcode','sg_netcode','The foundational systems that synchronize game state across players.',{deps:['mc_multiplayer'],rel:['sy_matchmaking','sy_crossplay','sy_voip','sy_anticheat','sy_regionservers'],persp:['programmer','liveops'],diff:6}),
+C('sy_multiplayer_net','Multiplayer netcode','sg_netcode','The foundational systems that synchronize game state across players.',{deps:['mc_multiplayer','mc_networked'],rel:['sy_matchmaking','sy_crossplay','sy_voip','sy_anticheat','sy_regionservers'],persp:['programmer','liveops'],diff:6}),
 C('sy_udp','UDP transport','sg_netcode','Low-latency, connectionless network transport underlying real-time play.',{deps:['sy_multiplayer_net'],rel:['sy_p2p','sy_clientpred','sy_interp','sy_rollback'],diff:2}),
 C('sy_p2p','Peer-to-peer transport','sg_netcode','A topology where clients connect directly to each other instead of routing through a server.',{deps:['sy_udp'],rel:['sy_matchmaking','sy_serverauth'],diff:3,persp:['programmer']}),
 C('sy_clientpred','Client-side prediction','sg_netcode','Clients simulate outcomes locally to hide network latency.',{deps:['sy_multiplayer_net'],rel:['sy_interp','sy_rollback'],mutex:['dm_pace_seq'],diff:7,persp:['programmer','qa']}),
@@ -27580,7 +27598,7 @@ C('sy_tutorials','Guided tutorials','sg_ux','Animated overlays that teach mechan
 C('sy_balancing','Numerical balancing','sg_ux','Tuning stats and rates so systems feel fair and intentional.',{deps:[],rel:['sy_abtesting','sy_liveopsdash','mc_charprogression'],diff:5,persp:['designer','programmer','qa','liveops']}),
 C('sy_unlockables','Unlockables','sg_ux','Content gated behind finding, earning, free selection, in-game purchasing, etc.',{deps:[],rel:['sy_achievements','sy_seasons'],diff:2,persp:['designer','programmer','player']}),
 C('sy_techtrees','Tech trees','sg_ux','Branching progression maps of content.',{deps:['sy_hud','sy_unlockables'],rel:['mc_xp','mc_charprogression'],diff:3,persp:['designer','programmer','player']}),
-C('sy_automation','In-game automation','sg_ux','Systems the player configures to act on their behalf over time.',{deps:[],rel:['mc_enginebuild','mc_factorysim','mc_idle'],diff:6,persp:['programmer','qa']}),
+C('sy_automation','In-game automation','sg_ux','Systems the player configures to act on their behalf over time.',{deps:[],rel:['mc_enginebuild','g_factorysim','g_idle'],diff:6,persp:['programmer','qa']}),
 C('sy_haptics','Haptic feedback system','sg_ux','Controller vibration or force feedback tied to in-game events.',{rel:['sy_juice'],diff:2}),
 
 /* ================= SYSTEMS: Narrative (sg_narrative) ================= */
@@ -29614,6 +29632,89 @@ function renderLLMInterface(){
   } else {
     renderLLMSetup(main);
   }
+}
+
+/* ---- Developer tool: check that the data has no algorithmically identifiable errors ---- */
+function validate() {
+  const all = new Map([...DOMAINS, ...GROUPS, ...CONCEPTS].map(c => [c.id, c]));
+  const ids = new Set(all.keys());
+  const fields = ['deps', 'rel', 'mutex', 'persp'];
+  let issues = [];
+
+  // Check parent references
+  CONCEPTS.forEach(c => {
+    if (c.parent && !ids.has(c.parent)) {
+      issues.push(`ORPHAN: ${c.id} parent='${c.parent}' not found`);
+    }
+  });
+  GROUPS.forEach(g => {
+    if (g.parent && !ids.has(g.parent)) {
+      issues.push(`ORPHAN: group ${g.id} parent='${g.parent}' not found`);
+    }
+  });
+
+  // Check deps, rel, mutex on every concept
+  CONCEPTS.forEach(c => {
+    ['deps', 'rel', 'mutex'].forEach(f => {
+      (c[f] || []).forEach(ref => {
+        if (!ids.has(ref)) {
+          issues.push(`DANGLE: ${c.id}.${f} -> '${ref}' not found`);
+        }
+      });
+    });
+  });
+
+  // Check for duplicate IDs
+  const seen = new Set();
+  [...DOMAINS, ...GROUPS, ...CONCEPTS].forEach(c => {
+    if (seen.has(c.id)) issues.push(`DUPLICATE: ${c.id}`);
+    seen.add(c.id);
+  });
+
+  // Check for self-references
+  CONCEPTS.forEach(c => {
+    ['deps', 'rel', 'mutex'].forEach(f => {
+      if ((c[f] || []).includes(c.id)) {
+        issues.push(`SELF_REF: ${c.id}.${f} references itself`);
+      }
+    });
+  });
+
+  // --- COMBO_DIFFICULTY checks ---
+  if (typeof COMBO_DIFFICULTY !== 'undefined') {
+    const pairs = new Set();
+    COMBO_DIFFICULTY.forEach((e, i) => {
+      // IDs exist
+      if (!ids.has(e.a)) issues.push(`COMBO[${i}]: a='${e.a}' not found`);
+      if (!ids.has(e.b)) issues.push(`COMBO[${i}]: b='${e.b}' not found`);
+      // Self-pair
+      if (e.a === e.b) issues.push(`COMBO[${i}]: a and b are the same ('${e.a}')`);
+      // Duplicate pair (either order)
+      const key = [e.a, e.b].sort().join('::');
+      if (pairs.has(key)) {
+        issues.push(`COMBO[${i}]: duplicate pair ${e.a} <-> ${e.b}`);
+      }
+      pairs.add(key);
+    });
+  }
+
+  // Check for circular deps (A deps B deps A)
+  CONCEPTS.forEach(c => {
+    (c.deps || []).forEach(d => {
+      const parent = all.get(d);
+      if (parent && (parent.deps || []).includes(c.id)) {
+        issues.push(`(Sometimes OK) CIRCULAR_DEP: ${c.id} <-> ${d}`);
+      }
+    });
+  });
+
+  if (issues.length) {
+    console.log(`%c${issues.length} issue(s) found:`, 'color:red;font-weight:bold');
+    issues.forEach(i => console.log(`  - ${i}`));
+  } else {
+    console.log(`%cAll clear. ${ids.size} entries, 0 issues.`, 'color:green;font-weight:bold');
+  }
+  return issues;
 }
 
 renderAll();
