@@ -121,11 +121,6 @@ main{grid-column:2;grid-row:2;position:relative;overflow:hidden;}
 .step-btn.done .mk{background:var(--accent);border-color:var(--accent);color:#1a1c14;}
 
 .wizard-main{overflow-y:auto; padding:0; position:relative;}
-.wizard-topbar{
-  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
-  position:sticky; top:0; background:var(--bg); z-index:10;
-  padding:26px 34px 18px; border-bottom:1px solid var(--line); margin-bottom:18px;
-}
 .wizard-content{padding:26px 34px 0;}
 
 .wizard-bottombar{display:flex; align-items:center; gap:10px; flex-wrap:wrap;position:sticky; bottom:0; background:var(--bg); z-index:10;padding:18px 34px 26px; border-top:1px solid var(--line); margin-top:18px;}
@@ -134,6 +129,7 @@ main{grid-column:2;grid-row:2;position:relative;overflow:hidden;}
 .btn:hover{border-color:var(--accent);}
 .btn.primary{background:var(--accent);color:#1a1c14;border-color:var(--accent);font-weight:600;}
 .btn.ghost{background:none;}
+.btn:disabled,.btn[disabled]{opacity:.35;cursor:default;pointer-events:none;}
 .step-title{font-family:'Space Grotesk';font-size:22px;margin-bottom:4px;}
 .step-sub{font-size:12.5px;color:var(--text-dim);margin-bottom:18px;}
 .opt-row{display:flex;align-items:flex-start;gap:10px;padding:9px 10px;border:1px solid var(--line-soft);border-radius:5px;margin-bottom:6px;background:var(--panel2);}
@@ -398,6 +394,57 @@ main{grid-column:2;grid-row:2;position:relative;overflow:hidden;}
     gap: 16px;
     padding: 16px 14px;
   }
+}
+/* ---- LLM-Guided Game Design ---- */
+.llm-setup{padding:26px 34px 60px;}
+.llm-setup label{display:block;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:5px;}
+.llm-setup textarea,.llm-setup input[type="text"],.llm-setup input[type="password"],.llm-setup input[type="number"]{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:8px 10px;border-radius:4px;outline:none;font-family:'Inter',sans-serif;font-size:12.5px;}
+.llm-setup textarea{min-height:90px;resize:vertical;}
+.llm-setup input:focus,.llm-setup textarea:focus{border-color:var(--accent);}
+.llm-setup .llm-field{margin-bottom:14px;}
+.llm-api-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;}
+.llm-api-key-wrap{position:relative;}
+.llm-api-key-wrap input{padding-right:34px;}
+.llm-key-toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-faint);cursor:pointer;font-size:15px;padding:2px 5px;border-radius:3px;line-height:1;}
+.llm-key-toggle:hover{color:var(--text);}
+.llm-clear-btn{margin-top:6px;}
+.llm-start-row{margin-top:18px;display:flex;gap:10px;align-items:center;}
+
+.llm-run{display:flex;flex-direction:column;height:100%;}
+.llm-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;top:0;background:var(--bg);z-index:10;padding:14px 34px 12px;border-bottom:1px solid var(--line);}
+.llm-progress{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);margin-left:auto;white-space:nowrap;}
+.llm-log-container{flex:1;overflow-y:auto;padding:14px 34px 14px 34px;}
+.llm-save-row{display:flex;gap:10px;padding:14px 34px 26px;border-top:1px solid var(--line);background:var(--bg);position:sticky;bottom:0;z-index:10;}
+
+.llm-log-filter{display:flex;gap:4px;margin-bottom:10px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;}
+.llm-log-filter button{font-family:'JetBrains Mono',monospace;font-size:10px;background:var(--panel2);border:1px solid var(--line-soft);color:var(--text-dim);padding:4px 9px;border-radius:3px;cursor:pointer;white-space:nowrap;min-height:30px;display:inline-flex;align-items:center;}
+.llm-log-filter button.active{background:var(--accent);color:#1a1c14;border-color:var(--accent);font-weight:600;}
+.llm-log-filter button:hover:not(.active){border-color:var(--line);color:var(--text);}
+
+.llm-log-entry{border:1px solid var(--line-soft);border-radius:4px;margin-bottom:4px;background:var(--panel2);overflow:hidden;}
+.llm-log-header{display:flex;align-items:center;gap:7px;padding:7px 10px;cursor:pointer;min-height:36px;user-select:none;}
+.llm-log-header:hover{background:rgba(255,255,255,.02);}
+.llm-status-badge{font-size:10px;padding:1px 6px;border-radius:8px;border:1px solid;flex-shrink:0;font-family:'JetBrains Mono',monospace;}
+.llm-status-badge.info{color:var(--text-dim);border-color:var(--text-faint);}
+.llm-status-badge.success{color:var(--diff-low);border-color:var(--diff-low);}
+.llm-status-badge.warning{color:var(--diff-mid);border-color:var(--diff-mid);}
+.llm-status-badge.error{color:var(--diff-high);border-color:var(--diff-high);}
+.llm-log-msg{font-size:12px;color:var(--text-dim);flex:1;line-height:1.4;}
+.llm-log-chevron{color:var(--text-faint);font-size:10px;transition:transform .15s ease;flex-shrink:0;}
+.llm-log-entry.expanded .llm-log-chevron{transform:rotate(90deg);}
+.llm-log-detail{border-top:1px solid var(--line-soft);padding:8px 10px;display:none;font-size:11.5px;line-height:1.55;color:var(--text-dim);}
+.llm-log-entry.expanded > .llm-log-detail{display:block;}
+.llm-log-detail pre{background:var(--bg);border:1px solid var(--line-soft);border-radius:3px;padding:8px 10px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.5;white-space:pre-wrap;word-break:break-word;margin-top:6px;color:var(--text-dim);}
+.llm-log-detail .llm-detail-section{margin-bottom:8px;}
+.llm-log-detail .llm-detail-label{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);margin-bottom:3px;}
+.llm-log-child{margin-left:14px;border-left:2px solid var(--line-soft);}
+.llm-log-child .llm-log-header{padding:5px 8px;min-height:30px;}
+.llm-log-timestamp{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--text-faint);margin-top:4px;}
+.llm-invalid-options{color:var(--diff-mid);}
+
+@media (max-width:900px){
+  .llm-setup,.llm-controls,.llm-log-container,.llm-save-row{padding-left:16px;padding-right:16px;}
+  .llm-api-grid{grid-template-columns:1fr;}
 }
 </style>
 </head>
@@ -28000,7 +28047,10 @@ function renderStepNav(){
   if(studio.context==='feature'){
     html += `<div class="prog" style="margin-bottom:14px;">Feature: <b style="color:var(--text)">${studio.activeFeature>=0?studio.design.features[studio.activeFeature].name:'(none selected)'}</b></div>`;
   }
-  html += `<div style="margin-bottom:6px;"><button class="btn ghost" style="width:100%" onclick="goToReview()">\u2192 Review & Summary</button></div>`;
+  html += `<div style="margin-bottom:6px;">
+  	<button class="btn ghost" style="width:100%" onclick="goToLlmSetup()">\uD83E\uDD16 LLM Guidance</button>
+    <button class="btn ghost" style="width:100%" onclick="goToReview()">\u2192 Review & Summary</button>
+  </div>`;
   nav.innerHTML = html;
   let lastDomain=null;
   STEPS.forEach(step=>{
@@ -28058,6 +28108,7 @@ function renderStepBody(){
     studio.currentStep = STEPS[0].id;
   }
   if(studio.currentStep==='__review__'){ renderReview(main); return; }
+  if(studio.currentStep==='__llmSetup__'){ renderLLMInterface(); return; }
   const step = STEPS.find(s=>s.id===studio.currentStep);
   const store = answerStore();
   const answered = currentAnswersFor(step);
@@ -28250,6 +28301,11 @@ function randomizeStep(){
 function prevStep(){ const i=STEPS.findIndex(s=>s.id===studio.currentStep); studio.currentStep = STEPS[Math.max(0,i-1)].id; renderStepNav(); renderStepBody(); }
 function nextStep(){ const i=STEPS.findIndex(s=>s.id===studio.currentStep); studio.currentStep = i<STEPS.length-1 ? STEPS[i+1].id : '__review__'; renderStepNav(); renderStepBody(); }
 function goToReview(){ studio.currentStep='__review__'; renderStepNav(); renderStepBody(); }
+function goToLlmSetup() {
+  studio.currentStep='__llmSetup__';
+  renderStepNav();
+  renderLLMInterface();
+}
 
 function renderReview(main){
   const store=answerStore();
@@ -28263,13 +28319,13 @@ function renderReview(main){
   </div>`;
   main.innerHTML = html;
   document.getElementById('design-name').addEventListener('change',(e)=>{ 
-    if(studio.context==='feature'&&studio.activeFeature>=0) studio.design.features[studio.activeFeature].name=e.target.value; 
-    else studio.design.name=e.target.value; 
-    renderStepNav(); 
+    if(studio.context==='feature'&&studio.activeFeature>=0) studio.design.features[studio.activeFeature].name=e.target.value;
+    else studio.design.name=e.target.value;
+    renderStepNav();
   });
-  
+
   const content = main.querySelector('.wizard-content');
-  
+
   let anyAnswers=false;
   DOMAINS.forEach(dom=>{
     const domainSteps = STEPS.filter(s=>s.domain.id===dom.id);
@@ -28538,6 +28594,1027 @@ document.getElementById('app').addEventListener('click', (e) => {
     document.getElementById('app').classList.remove('mobile-aside-open');
   }
 });
+
+/* =============================================================
+   LLM-GUIDED GAME DESIGN
+============================================================= */
+var gcaLLMRunner = null;
+var gcaLLMLastRunner = null;
+var gcaLLMLogFilter = new Set(['info','success','warning','error']);
+
+/* ---- LLMConfig ---- */
+function loadLLMConfig(){
+  return {
+    baseUrl: localStorage.getItem('gca_llm_baseUrl')||'',
+    apiKey: localStorage.getItem('gca_llm_apiKey')||'',
+    model: localStorage.getItem('gca_llm_model')||'',
+    maxTokens: localStorage.getItem('gca_llm_maxTokens')||'2048',
+    temperature: localStorage.getItem('gca_llm_temperature')||'0.2'
+  };
+}
+function saveLLMConfig(cfg){
+  Object.entries(cfg).forEach(([k,v])=>localStorage.setItem('gca_llm_'+k,v));
+}
+function clearLLMConfig(){
+  ['gca_llm_baseUrl','gca_llm_apiKey','gca_llm_model','gca_llm_maxTokens','gca_llm_temperature'].forEach(k=>localStorage.removeItem(k));
+}
+
+/* ---- Prompt Builder ---- */
+function buildWizardPrompt(userPrompt, step, options, completedSteps, allSel){
+  var sb = [];
+  sb.push('You are filling out a game design wizard on behalf of a user. The user wants to design this game:');
+  sb.push('<UserDesignRequest>');
+  sb.push(userPrompt);
+  sb.push('</UserDesignRequest>');
+  sb.push('');
+  sb.push('Current step: ' + step.title);
+  sb.push('Selection mode: ' + step.select);
+  sb.push('');
+  if(completedSteps.size > 0){
+    sb.push('Already completed steps:');
+    completedSteps.forEach(function(ids, stepId){
+      if(ids.length > 0){
+        var st = STEPS.find(function(s){return s.id===stepId;});
+        sb.push('  '+(st?st.title:stepId)+': '+ids.join(', '));
+      }
+    });
+    sb.push('');
+  }
+  sb.push('Available options for this step:');
+  options.forEach(function(opt){
+    var prefix = opt.isChild ? '    (child of '+(BY_ID[opt.parent]?BY_ID[opt.parent].name:opt.parent)+') - ' : '  - ';
+    var suffix = allSel.has(opt.id) ? ' (already added as required; no need to pick this)' : '';
+    sb.push(prefix+opt.id+': '+opt.name+' ('+opt.desc+') [diff:'+(opt.diff||0)+']'+suffix);
+  });
+  sb.push('  - Other: <custom text> (use this if none of the above fit)');
+  sb.push('');
+  sb.push('Rules:');
+  sb.push('  - Selection mode is "'+step.select+'": '+(step.select==='single'?'pick exactly ONE option':'pick any number of options that apply'));
+  sb.push('  - Options marked "(child of X)" are nested under their parent; picking a child also requires its parent');
+  sb.push('  - If you choose "Other", respond with "Other: <your custom text>"');
+  sb.push('  - You can mix predefined IDs and "Other" in multi-select mode');
+  if(step.select !== 'single') sb.push('  - If none apply, say "none"');
+  sb.push('  - Do not include any explanation beyond the IDs and optional Other text');
+  sb.push('');
+  sb.push('Respond with ONLY the IDs of the option(s) you select, separated by commas. Example: "g_simulation, Other: Farm management" or just "g_simulation" or "Other: My custom genre".');
+  return sb.join('\n');
+}
+
+/* ---- Options with children ---- */
+function optionsForWithChildren(step){
+  var result = [];
+  optionsFor(step).forEach(function(c){
+    result.push({id:c.id, name:c.name, desc:c.desc, diff:c.diff||0, parent:null, isChild:false});
+    (CHILDREN_OF[c.id]||[]).forEach(function(kidId){
+      var kid = BY_ID[kidId];
+      if(kid) result.push({id:kid.id, name:kid.name, desc:kid.desc, diff:kid.diff||0, parent:c.id, isChild:true});
+    });
+  });
+  return result;
+}
+
+/* ---- Response Parser ---- */
+function parseSelectedIds(response, options){
+  var validIds = new Set(options.map(function(o){return o.id;}));
+  var selected = [];
+  var customs = [];
+  var otherRe = /Other:\s*(.+)/gi;
+  var m;
+  while((m=otherRe.exec(response))!==null){
+    var t = m[1].trim();
+    if(t) customs.push(t);
+  }
+  var parts = response.split(/[,\n\r;]+/);
+  parts.forEach(function(part){
+    var id = part.trim();
+    if(id.toLowerCase().startsWith('other:')) return;
+    if(validIds.has(id) && !selected.includes(id)) selected.push(id);
+    else {
+      var match = options.find(function(o){
+        return o.name.toLowerCase().includes(id.toLowerCase()) || id.toLowerCase().includes(o.name.toLowerCase());
+      });
+      if(match && !selected.includes(match.id)) selected.push(match.id);
+    }
+  });
+  return {ids:selected, customs:customs};
+}
+
+/* ---- Basic Degenerate Loop Detection ---- */
+function hasRepeatedWord(text, threshold){
+  var counts = {};
+  var words = text.split(' ').filter(function(w){return w.length>0;});
+  for(var i=0;i<words.length;i++){
+    var w = words[i].toLowerCase();
+    counts[w] = (counts[w]||0)+1;
+    if(counts[w] > threshold) return true;
+  }
+  return false;
+}
+
+/* ---- API Client ---- */
+async function llmChatCompletion(cfg, prompt){
+  var url = cfg.baseUrl.replace(/\/+$/,'')+'/v1/chat/completions';
+  var body = JSON.stringify({
+    model: cfg.model || undefined,
+    messages: [{role:'user', content:prompt}],
+    max_tokens: parseInt(cfg.maxTokens)||2048,
+    temperature: parseFloat(cfg.temperature)||0.2
+  });
+  var headers = {'Content-Type':'application/json'};
+  if(cfg.apiKey) headers['Authorization'] = 'Bearer '+cfg.apiKey;
+  var startedAt = Date.now();
+  var resp = await fetch(url, {method:'POST', headers:headers, body:body, signal:arguments[2]});
+  var data = await resp.json();
+  var choice = data.choices&&data.choices[0]?data.choices[0]:null;
+  var msg = choice&&choice.message?choice.message:{content:''};
+  var content = (msg.content||'').trim();
+  var reasoning = msg.reasoning_content || msg.reasoning || '';
+  var usage = data.usage||{};
+  var tokens = {
+    prompt: usage.prompt_tokens||0,
+    completion: usage.completion_tokens||0,
+    total: usage.total_tokens||0
+  };
+  var completedAt = Date.now();
+  var durationMs = completedAt - startedAt;
+  var timing = {
+    started: startedAt,
+    completed: completedAt,
+    durationMs: durationMs,
+    prompt_per_second: durationMs>0 ? ((usage.prompt_tokens||0)/durationMs*1000).toFixed(1) : '0',
+    predicted_per_second: durationMs>0 ? ((usage.completion_tokens||0)/durationMs*1000).toFixed(1) : '0'
+  };
+  var degenerate = hasRepeatedWord(content, 25);
+  return {content:content, reasoning:reasoning, tokens:tokens, timing:timing, degenerate:degenerate, httpStatus:resp.status, raw:JSON.stringify(data)};
+}
+
+/* ---- Log System ---- */
+var gcaLogId = 0;
+function createLogEntry(level, message, stepId, expandable){
+  return {
+    id: 'log_'+(++gcaLogId),
+    timestamp: Date.now(),
+    level: level,
+    message: message,
+    stepId: stepId || null,
+    expandable: expandable || null,
+    children: []
+  };
+}
+
+function createStepEntry(stepNum, stepTitle, stepId){
+  return {
+    id: 'log_'+(++gcaLogId),
+    timestamp: Date.now(),
+    level: 'info',
+    message: stepNum+'. '+stepTitle,
+    stepId: stepId || null,
+    expandable: null,
+    children: [],
+    isStep: true
+  };
+}
+
+function createChildEntry(level, message, expandable){
+  return {
+    id: 'log_'+(++gcaLogId),
+    timestamp: Date.now(),
+    level: level,
+    message: message,
+    stepId: null,
+    expandable: expandable || null,
+    children: [],
+    isChild: true
+  };
+}
+
+function renderLogEntry(entry){
+  var div = document.createElement('div');
+  div.className = 'llm-log-entry'+(entry.isChild?' llm-log-child':'');
+  div.dataset.level = entry.level;
+  div.dataset.id = entry.id;
+  var ts = new Date(entry.timestamp);
+  var timeStr = ts.toLocaleTimeString();
+  var header = document.createElement('div');
+  header.className = 'llm-log-header';
+  header.title = timeStr;
+  var badge = document.createElement('span');
+  badge.className = 'llm-status-badge ' + entry.level;
+  var icons = {info:'\u2139\ufe0f', success:'\u2705', warning:'\u26a0\ufe0f', error:'\u274c'};
+  badge.textContent = icons[entry.level]||entry.level;
+  var msg = document.createElement('span');
+  msg.className = 'llm-log-msg';
+  msg.textContent = entry.message;
+  var hasExpandable = !!(entry.expandable || (entry.children && entry.children.length));
+  var chev = document.createElement('span');
+  chev.className = 'llm-log-chevron';
+  chev.textContent = '\u25b6';
+  header.appendChild(badge);
+  header.appendChild(msg);
+  if(hasExpandable){
+    header.appendChild(chev);
+    header.onclick = function(){ div.classList.toggle('expanded'); };
+  }
+  div.appendChild(header);
+  if(entry.expandable || (entry.children && entry.children.length)){
+    var detail = document.createElement('div');
+    detail.className = 'llm-log-detail';
+    if(entry.expandable){
+      var e = entry.expandable;
+      var sections = [];
+      sections.push('<div class="llm-timestamp">'+timeStr+'</div>');
+      if(e.reasoning){
+        sections.push('<div class="llm-detail-section"><div class="llm-detail-label">Reasoning</div><pre>'+escHtml(e.reasoning)+'</pre></div>');
+      }
+      if(e.rawResponse){
+        sections.push('<div class="llm-detail-section"><div class="llm-detail-label">Raw Response</div><pre>'+escHtml(e.rawResponse)+'</pre></div>');
+      }
+      if(e.prompt){
+        sections.push('<div class="llm-detail-section"><div class="llm-detail-label">Prompt</div><pre>'+escHtml(e.prompt)+'</pre></div>');
+      }
+      if(e.errorMessage){
+        sections.push('<div class="llm-detail-section"><div class="llm-detail-label">Error</div><pre>'+escHtml(e.errorMessage)+'</pre></div>');
+      }
+      if(e.degenerateText){
+        sections.push('<div class="llm-detail-section"><div class="llm-detail-label">Degenerate Output</div><pre>'+escHtml(e.degenerateText)+'</pre></div>');
+      }
+      if(e.repeatedWord!==undefined){
+        sections.push('<div class="llm-detail-section"><div class="llm-detail-label">Repeated Word</div>"'+escHtml(e.repeatedWord)+'" ('+e.wordCount+' times)</div>');
+      }
+      if(e.selectedIds && e.selectedIds.length){
+        sections.push('<div class="llm-detail-section"><div class="llm-detail-label">Selected</div>'+e.selectedIds.map(function(id){var c=BY_ID[id];return c?c.name:id;}).join(', ')+'</div>');
+      }
+      if(e.customTexts && e.customTexts.length){
+        sections.push('<div class="llm-detail-section"><div class="llm-detail-label">Custom (Other)</div>'+e.customTexts.join(', ')+'</div>');
+      }
+      if(e.autoSelected && e.autoSelected.length){
+        sections.push('<div class="llm-detail-section"><div class="llm-detail-label">Auto-selected deps</div>'+e.autoSelected.map(function(id){var c=BY_ID[id];return c?c.name:id;}).join(', ')+'</div>');
+      }
+      if(e.mutexFiltered && e.mutexFiltered.length){
+        sections.push('<div class="llm-detail-section"><div class="llm-detail-label">Mutex filtered</div>'+e.mutexFiltered.join(', ')+'</div>');
+      }
+      if(e.invalidOptions && e.invalidOptions.length){
+        sections.push('<div class="llm-detail-section"><div class="llm-detail-label">Invalid options</div><span class="llm-invalid-options">'+e.invalidOptions.map(function(o){return escHtml(o);}).join(', ')+'</span></div>');
+      }
+      if(e.tokens){
+        sections.push('<div class="llm-detail-section"><div class="llm-detail-label">Token counts</div>prompt: '+e.tokens.prompt+' | completion: '+e.tokens.completion+' | total: '+e.tokens.total+'</div>');
+      }
+      if(e.timing){
+        var dur = (e.timing.durationMs/1000).toFixed(1);
+        sections.push('<div class="llm-detail-section"><div class="llm-detail-label">Timing</div>'+dur+'s | prompt: '+e.timing.prompt_per_second+' tok/s | predicted: '+e.timing.predicted_per_second+' tok/s</div>');
+      }
+      if(e.model){
+        sections.push('<div class="llm-detail-section"><div class="llm-detail-label">Model</div>'+escHtml(e.model)+'</div>');
+      }
+      if(e.maxTokens!==undefined){
+        sections.push('<div class="llm-detail-section"><div class="llm-detail-label">Max tokens</div>'+e.maxTokens+'</div>');
+      }
+      if(e.temperature!==undefined){
+        sections.push('<div class="llm-detail-section"><div class="llm-detail-label">Temperature</div>'+e.temperature+'</div>');
+      }
+      if(e.httpStatus && e.httpStatus >= 400){
+        sections.push('<div class="llm-detail-section"><div class="llm-detail-label">HTTP Status</div>'+e.httpStatus+'</div>');
+      }
+      if(e.retryCount!==undefined){
+        sections.push('<div class="llm-detail-section"><div class="llm-detail-label">Retry count</div>'+e.retryCount+'</div>');
+      }
+      if(e.stats){
+        var s = e.stats;
+        sections.push('<div class="llm-detail-section"><div class="llm-detail-label">Summary</div>'+s.done+' done, '+s.failed+' failed, '+s.skipped+' skipped, '+(s.totalMs/1000).toFixed(1)+'s total'+(s.totalTokens?', '+s.totalTokens+' tokens':'')+'</div>');
+      }
+      detail.innerHTML = sections.join('');
+    }
+    if(entry.children && entry.children.length){
+      entry.children.forEach(function(child){
+        detail.appendChild(renderLogEntry(child));
+      });
+    }
+    div.appendChild(detail);
+  }
+  return div;
+}
+
+function escHtml(s){
+  if(!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderLogEntries(container, entries){
+  container.querySelectorAll(':scope > .llm-log-filter').forEach(function(el){/* keep filter bar */});
+  var filterBar = container.querySelector('.llm-log-filter');
+  container.querySelectorAll('.llm-log-entry').forEach(function(el){el.remove();});
+  entries.forEach(function(entry){
+    if(entry.isChild) return;
+    if(!gcaLLMLogFilter.has(entry.level)){
+      if(entry.children && entry.children.length){
+        var anyChildVisible = entry.children.some(function(c){return gcaLLMLogFilter.has(c.level);});
+        if(!anyChildVisible) return;
+      } else return;
+    }
+    container.appendChild(renderLogEntry(entry));
+  });
+  if(filterBar) container.insertBefore(filterBar, container.firstChild);
+  container.dataset.renderedCount = entries.length;
+}
+
+function createFilterBar(onFilterChange){
+  var bar = document.createElement('div');
+  bar.className = 'llm-log-filter';
+  var filters = [
+    {key:'all', label:'All'},
+    {key:'info', label:'\u2139\ufe0f Info'},
+    {key:'success', label:'\u2705 Success'},
+    {key:'warning', label:'\u26a0\ufe0f Warning'},
+    {key:'error', label:'\u274c Error'}
+  ];
+  filters.forEach(function(f){
+    var btn = document.createElement('button');
+    btn.textContent = f.label;
+    btn.dataset.filter = f.key;
+    var isActive = f.key==='all' ? gcaLLMLogFilter.size===4 : gcaLLMLogFilter.has(f.key);
+    if(f.key==='all'){
+      btn.className = isActive ? 'active' : '';
+      btn.onclick = function(){
+        btn.classList.toggle('active');
+        var isActive = btn.classList.contains('active');
+        if(isActive){
+          gcaLLMLogFilter = new Set(['info','success','warning','error']);
+        } else {
+          var active = new Set();
+          bar.querySelectorAll('button.active:not([data-filter=all])').forEach(function(b){active.add(b.dataset.filter);});
+          gcaLLMLogFilter = active;
+        }
+        onFilterChange();
+      };
+    } else {
+      btn.className = isActive ? 'active' : '';
+      btn.onclick = function(){
+        btn.classList.toggle('active');
+        var allBtn = bar.querySelector('button[data-filter="all"]');
+        var active = new Set();
+        bar.querySelectorAll('button.active:not([data-filter=all])').forEach(function(b){active.add(b.dataset.filter);});
+        if(active.size === 4){
+          if(allBtn) allBtn.classList.add('active');
+          gcaLLMLogFilter = new Set(['info','success','warning','error']);
+        } else {
+          if(allBtn) allBtn.classList.remove('active');
+          gcaLLMLogFilter = active;
+        }
+        onFilterChange();
+      };
+    }
+    bar.appendChild(btn);
+  });
+  return bar;
+}
+
+/* ---- LLMRunner ---- */
+function LLMRunner(cfg, userPrompt){
+  this.cfg = cfg;
+  this.userPrompt = userPrompt;
+  this.steps = STEPS.slice();
+  this.currentStepIdx = 0;
+  this.state = 'idle';
+  this._abortController = null;
+  this._paused = false;
+  this._resumeResolve = null;
+  this._pendingPause = false;
+  this._requestInProgress = false;
+  this.stepEntry = null;
+  this.logs = [];
+  this.stats = {done:0, failed:0, skipped:0, totalMs:0, totalTokens:0};
+  this.startTime = null;
+  this.stepDurations = [];
+  this.eta = '';
+}
+
+LLMRunner.prototype.pushStepChild = function(level, message, expandable){
+  if(this.stepEntry){
+    this.stepEntry.children.push(createChildEntry(level, message, expandable));
+  }
+};
+
+LLMRunner.prototype.start = async function(){
+  this.state = 'running';
+  this.startTime = Date.now();
+  this.stats = {done:0, failed:0, skipped:0, totalMs:0, totalTokens:0};
+  this.logs = [];
+  this.stepDurations = [];
+  this.currentStepIdx = 0;
+  this._paused = false;
+  this._pendingPause = false;
+  this._requestInProgress = false;
+  this.stepEntry = null;
+  this._abortController = new AbortController();
+  this.logs.push(createLogEntry('info', 'Starting LLM run \u00b7 '+this.steps.length+' steps \u00b7 model: '+(this.cfg.model||'default')));
+  renderLLMRun(this);
+  await this._runSteps();
+  if(this.state !== 'stopped'){
+    this.state = 'idle';
+    this.eta = '';
+  }
+  renderLLMRun(this);
+};
+
+LLMRunner.prototype._runSteps = async function(){
+  for(var i=this.currentStepIdx; i<this.steps.length; i++){
+    this.currentStepIdx = i;
+    if(this._paused){
+      await new Promise(function(r){this._resumeResolve=r;}.bind(this));
+    }
+    if(this.state==='stopped') break;
+    if(this._pendingPause){
+      this._pendingPause = false;
+      this._paused = true;
+      this.state = 'paused';
+      this.logs.push(createLogEntry('info', 'Paused'));
+      renderLLMRun(this);
+      await new Promise(function(r){this._resumeResolve=r;}.bind(this));
+      if(this.state==='stopped') break;
+      this._paused = false;
+      this.state = 'running';
+      renderLLMRun(this);
+    }
+    await this._executeStep(i);
+    if(this.state==='stopped') break;
+  }
+  if(this.state!=='stopped'){
+    var totalMs = Date.now()-this.startTime;
+    this.stats.totalMs = totalMs;
+    var summary = createLogEntry('info',
+      'Run complete: '+this.stats.done+' done'+(this.stats.failed?', '+this.stats.failed+' failed':'')+(this.stats.skipped?', '+this.stats.skipped+' skipped':'')+ ', '+(totalMs/1000).toFixed(1)+'s total',
+      null,
+      {type:'summary', stats:this.stats}
+    );
+    this.logs.push(summary);
+  }
+};
+
+LLMRunner.prototype._executeStep = async function(idx){
+  var step = this.steps[idx];
+  var allSel = allSelectedIds();
+  var rawOptions = optionsForWithChildren(step);
+  var mutexFiltered = [];
+  var filtered = rawOptions.filter(function(opt){
+    var conflict = (BY_ID[opt.id]&&BY_ID[opt.id].mutex||[]).find(function(m){return allSel.has(m);});
+    if(!conflict){
+      allSel.forEach(function(selId){
+        var sel = BY_ID[selId];
+        if(sel && sel.mutex && sel.mutex.indexOf(opt.id)!==-1) conflict = selId;
+      });
+    }
+    if(conflict){
+      mutexFiltered.push((BY_ID[opt.id]?BY_ID[opt.id].name:opt.id)+' (mutex with '+(BY_ID[conflict]?BY_ID[conflict].name:conflict)+')');
+      return false;
+    }
+    return true;
+  });
+  if(filtered.length===0){
+    this.stats.skipped++;
+    var skipEntry = createStepEntry(idx+1, step.title, step.id);
+    skipEntry.level = 'info';
+    skipEntry.message = (idx+1)+'. '+step.title;
+    skipEntry.expandable = {type:'summary', mutexFiltered:mutexFiltered};
+    skipEntry.children.push(createChildEntry('info', 'Skipped: all options mutexed'));
+    this.logs.push(skipEntry);
+    this.stepEntry = null;
+    this.eta = this._calcETA();
+    renderLLMRun(this);
+    return;
+  }
+  var completedSteps = new Map();
+  var store = answerStore();
+  Object.keys(store.answers).forEach(function(k){
+    var arr = store.answers[k];
+    if(arr && arr.length>0){
+      var ids = arr.filter(function(a){return a.type==='concept';}).map(function(a){var c=BY_ID[a.id];return c?c.name:a.id;});
+      var customs = arr.filter(function(a){return a.type==='custom';}).map(function(a){return 'Other: '+a.name;});
+      completedSteps.set(k, ids.concat(customs));
+    }
+  });
+  var prompt = buildWizardPrompt(this.userPrompt, step, filtered, completedSteps, allSel);
+  this.stepEntry = createStepEntry(idx+1, step.title, step.id);
+  this.stepEntry.children.push(createChildEntry('info', 'Sending request',
+    {type:'request', prompt:prompt, model:this.cfg.model||'default', maxTokens:parseInt(this.cfg.maxTokens)||2048, temperature:parseFloat(this.cfg.temperature)||0.2}));
+  this.logs.push(this.stepEntry);
+  this.eta = this._calcETA();
+  renderLLMRun(this);
+  this._requestInProgress = true;
+  renderLLMRun(this);
+  var stepStart = Date.now();
+  var result;
+  try{
+    result = await llmChatCompletion(this.cfg, prompt, this._abortController.signal);
+  }catch(err){
+    this._requestInProgress = false;
+    renderLLMRun(this);
+    if(err.name==='AbortError'){
+      this.stats.skipped++;
+      this.stepEntry.level = 'info';
+      this.stepEntry.message = (idx+1)+'. '+step.title;
+      this.stepEntry.children.push(createChildEntry('info', 'Cancelled'));
+      this.stepEntry = null;
+      renderLLMRun(this);
+      return;
+    }
+    this.stats.failed++;
+    this.stepEntry.level = 'error';
+    this.stepEntry.message = (idx+1)+'. '+step.title;
+    this.stepEntry.children.push(createChildEntry('error', 'Request failed',
+      {type:'error', errorMessage:err.message||String(err)}));
+    this.stepEntry = null;
+    this.eta = this._calcETA();
+    renderLLMRun(this);
+    return;
+  }
+  this._requestInProgress = false;
+  renderLLMRun(this);
+  var degenerate = result.degenerate;
+  var retryCount = 0;
+  if(degenerate){
+    retryCount = 1;
+    var repWord = ''; var repCount = 0;
+    var wc = {};
+    result.content.split(' ').forEach(function(w){
+      if(!w) return;
+      var lw = w.toLowerCase();
+      wc[lw]=(wc[lw]||0)+1;
+      if(wc[lw]>repCount){repCount=wc[lw];repWord= lw;}
+    });
+    this.pushStepChild('warning', 'Degenerate loop detected; retrying',
+      {type:'degenerate', degenerateText:result.content.substring(0,300), repeatedWord:repWord, wordCount:repCount, tokens:result.tokens, timing:result.timing});
+    this.eta = this._calcETA();
+    renderLLMRun(this);
+    var retryPrompt = 'Extract the last draft from this chain of thought, or redo the prompt if no chain of thought is present. Original prompt:\n'+prompt+'\n\nChain of thought to extract from: '+result.content;
+    try{
+      result = await llmChatCompletion(this.cfg, retryPrompt, this._abortController.signal);
+    }catch(err){
+      if(err.name==='AbortError'){
+        this.stats.skipped++;
+        this.stepEntry.level = 'info';
+        this.stepEntry.message = (idx+1)+'. '+step.title;
+        this.pushStepChild('info', 'Cancelled');
+        this.stepEntry = null;
+        renderLLMRun(this);
+        return;
+      }
+      this.stats.failed++;
+      this.stepEntry.level = 'error';
+      this.stepEntry.message = (idx+1)+'. '+step.title;
+      this.pushStepChild('error', 'Retry failed',
+        {type:'error', errorMessage:err.message||String(err), retryCount:1});
+      this.stepEntry = null;
+      this.eta = this._calcETA();
+      renderLLMRun(this);
+      return;
+    }
+    if(result.degenerate || result.content.length<4){
+      this.stats.failed++;
+      this.stepEntry.level = 'error';
+      this.stepEntry.message = (idx+1)+'. '+step.title;
+      this.pushStepChild('error', result.content.length<4?'Still degenerate after retry':'Response too short',
+        {type:'error', errorMessage:result.content.length<4?'Response too short':'Still degenerate after retry',
+          degenerateText:result.content.substring(0,300), retryCount:1, tokens:result.tokens, timing:result.timing});
+      this.stepEntry = null;
+      this.eta = this._calcETA();
+      renderLLMRun(this);
+      return;
+    }
+  }
+  if(result.content.length<4 && !degenerate){
+    this.stats.failed++;
+    this.stepEntry.level = 'error';
+    this.stepEntry.message = (idx+1)+'. '+step.title;
+    this.pushStepChild('error', 'Response too short',
+      {type:'error', errorMessage:'Response only '+result.content.length+' characters', rawResponse:result.content, tokens:result.tokens, timing:result.timing});
+    this.stepEntry = null;
+    this.eta = this._calcETA();
+    renderLLMRun(this);
+    return;
+  }
+  var parsed = parseSelectedIds(result.content, filtered);
+  var selectedIds = parsed.ids;
+  var customTexts = parsed.customs;
+  var validIds = new Set(filtered.map(function(o){return o.id;}));
+  var invalidOptions = selectedIds.filter(function(id){return !validIds.has(id);});
+  if(invalidOptions.length){
+    this.pushStepChild('warning', 'Selected options that don\'t exist for this step: '+invalidOptions.join(', '),
+      {invalidOptions:invalidOptions});
+  }
+  selectedIds = selectedIds.filter(function(id){return validIds.has(id);});
+  var mutexBlocked = [];
+  var finalSelected = selectedIds.filter(function(id){
+    var optMutex = (BY_ID[id]&&BY_ID[id].mutex)||[];
+    var conflict = optMutex.find(function(m){return allSel.has(m);});
+    if(!conflict){
+      allSel.forEach(function(selId){
+        var sel = BY_ID[selId];
+        if(sel && sel.mutex && sel.mutex.indexOf(id)!==-1) conflict = selId;
+      });
+    }
+    if(conflict){
+      mutexBlocked.push((BY_ID[id]?BY_ID[id].name:id)+' (mutex with '+(BY_ID[conflict]?BY_ID[conflict].name:conflict)+')');
+      return false;
+    }
+    return true;
+  });
+  if(mutexBlocked.length){
+    this.pushStepChild('warning', 'Mutex blocked: '+mutexBlocked.join(', '));
+  }
+  var parentIdsToSelect = [];
+  finalSelected.forEach(function(id){
+    var opt = filtered.find(function(o){return o.id===id;});
+    if(opt && opt.isChild && opt.parent && !allSel.has(opt.parent) && finalSelected.indexOf(opt.parent)===-1){
+      parentIdsToSelect.push(opt.parent);
+    }
+  });
+  var autoSelected = [];
+  var store2 = answerStore();
+  parentIdsToSelect.forEach(function(parentId){
+    var parentConcept = BY_ID[parentId];
+    if(parentConcept){
+      var parentStep = STEPS.find(function(s){return s.id===parentConcept.parent;});
+      if(parentStep) toggleAnswerSilent(parentStep, parentConcept);
+      autoSelected.push(parentId);
+    }
+  });
+  finalSelected.forEach(function(id){
+    var concept = BY_ID[id];
+    if(concept){
+      var conceptStep = STEPS.find(function(s){return s.id===concept.parent;});
+      if(conceptStep) toggleAnswerSilent(conceptStep, concept);
+    }
+  });
+  var jsSelected = allSelectedIds();
+  var allBefore = new Set();
+  store2.answers = store2.answers || {};
+  Object.values(store2.answers).forEach(function(arr){arr.forEach(function(a){if(a.type==='concept')allBefore.add(a.id);});});
+  var depAutoSelected = [];
+  finalSelected.concat(parentIdsToSelect).forEach(function(id){allBefore.add(id);});
+  jsSelected.forEach(function(id){
+    if(!allBefore.has(id)){
+      depAutoSelected.push(id);
+    }
+  });
+  autoSelected = autoSelected.concat(depAutoSelected);
+  customTexts.forEach(function(text){
+    if(!store2.answers[step.id]) store2.answers[step.id]=[];
+    store2.answers[step.id].push({type:'custom', id:'custom_'+Date.now()+Math.random(), name:text, desc:''});
+  });
+  if(customTexts.length){
+    this.pushStepChild('warning', 'Filled-in "Other": '+customTexts.join(', '));
+  }
+  var stepDur = Date.now()-stepStart;
+  this.stepDurations.push(stepDur);
+  this.stats.done++;
+  this.stats.totalTokens += (result.tokens.total||0);
+  this.stepEntry.level = 'success';
+  this.stepEntry.message = (idx+1)+'. '+step.title;
+  this.stepEntry.expandable = {
+    type:'response',
+    reasoning:result.reasoning,
+    rawResponse:result.content,
+    selectedIds:finalSelected,
+    customTexts:customTexts,
+    autoSelected:autoSelected,
+    mutexFiltered:mutexFiltered.length?mutexFiltered:mutexBlocked.length?mutexBlocked:null,
+    invalidOptions:invalidOptions.length?invalidOptions:null,
+    tokens:result.tokens,
+    timing:Object.assign({},result.timing,{durationMs:stepDur})
+  };
+  this.stepEntry.children.push(createChildEntry('success', 'Selected: '+(finalSelected.map(function(id){var c=BY_ID[id];return c?c.name:id;})).join(', ')+(customTexts.length?' + '+customTexts.length+' custom':'')));
+  this.stepEntry = null;
+  renderStepNav();
+  this.eta = this._calcETA();
+  renderLLMRun(this);
+};
+
+LLMRunner.prototype._calcETA = function(){
+  if(this.stepDurations.length===0) return '';
+  var remaining = this.steps.length - this.currentStepIdx - 1;
+  if(remaining<=0) return '';
+  var avg = this.stepDurations.reduce(function(a,b){return a+b;},0)/this.stepDurations.length;
+  var etaMs = avg*remaining;
+  var etaSec = (etaMs/1000).toFixed(1);
+  return '~'+etaSec+'s remaining ('+remaining+' steps left)';
+};
+
+LLMRunner.prototype.pause = function(){
+  if(this.state!=='running') return;
+  if(this._requestInProgress){
+    this._pendingPause = true;
+    renderLLMRun(this);
+  } else {
+    this._paused = true;
+    this.state = 'paused';
+    this.logs.push(createLogEntry('info', 'Paused'));
+    renderLLMRun(this);
+  }
+};
+
+LLMRunner.prototype.cancelPause = function(){
+  this._pendingPause = false;
+  renderLLMRun(this);
+};
+
+LLMRunner.prototype.resume = function(){
+  if(this.state!=='paused') return;
+  this._paused = false;
+  this.state = 'running';
+  this.logs.push(createLogEntry('info', 'Resumed'));
+  renderLLMRun(this);
+  if(this._resumeResolve){
+    var r = this._resumeResolve;
+    this._resumeResolve = null;
+    r();
+  }
+};
+
+LLMRunner.prototype.stop = function(){
+  this.state = 'stopped';
+  if(this._abortController){
+    try{ this._abortController.abort(); }catch(e){}
+    this._abortController = new AbortController();
+  }
+  if(this._resumeResolve){
+    var r = this._resumeResolve;
+    this._resumeResolve = null;
+    r();
+  }
+  this._paused = false;
+  this._pendingPause = false;
+  var remaining = this.steps.length - this.currentStepIdx - 1;
+  this.stats.skipped += remaining;
+  this.logs.push(createLogEntry('info', 'Stopped by user'));
+  renderLLMRun(this);
+};
+
+/* Silent toggleAnswer that doesn't re-render */
+function toggleAnswerSilent(step, concept){
+  var store = answerStore();
+  var arr = store.answers[step.id] ? [...store.answers[step.id]] : [];
+  var idx = arr.findIndex(function(a){return a.type==='concept'&&a.id===concept.id;});
+  if(idx>=0){
+    arr.splice(idx,1);
+    var descendants = new Set();
+    function addDesc(id){(CHILDREN_OF[id]||[]).forEach(function(cid){descendants.add(cid);addDesc(cid);});}
+    addDesc(concept.id);
+    store.answers[step.id] = arr.filter(function(a){return !(a.type==='concept'&&descendants.has(a.id));});
+  } else {
+    if(step.select==='single'){ store.answers[step.id]=[{type:'concept',id:concept.id}]; }
+    else { arr.push({type:'concept',id:concept.id}); store.answers[step.id]=arr; }
+    var q = [concept.id];
+    while(q.length){
+      var c = BY_ID[q.shift()];
+      if(c && c.deps){
+        c.deps.forEach(function(d){
+          if(!allSelectedIds().has(d)){
+            var depC = BY_ID[d]; if(!depC) return;
+            var depS = STEPS.find(function(s){return s.id===depC.parent;});
+            if(depS){
+              if(depS.select==='single'){ store.answers[depS.id]=[{type:'concept',id:d}]; }
+              else { var dArr = store.answers[depS.id]?[...store.answers[depS.id]]:[]; dArr.push({type:'concept',id:d}); store.answers[depS.id]=dArr; }
+              q.push(d);
+            }
+          }
+        });
+      }
+    }
+  }
+}
+
+/* ---- Markdown Export ---- */
+function exportMarkdown(){
+  var store = answerStore();
+  var lines = [];
+  var name = studio.design.name || 'Untitled Game';
+  lines.push('# Title: ' + name);
+  lines.push('');
+  var desc = (store.notes['__llm_description__'] || '').trim();
+  if(desc){
+    desc.split('\n').forEach(function(l){lines.push('> '+l);});
+    lines.push('');
+  }
+  DOMAINS.forEach(function(dom){
+    var domainSteps = STEPS.filter(function(s){return s.domain.id===dom.id;});
+    var hasAny = false;
+    domainSteps.forEach(function(s){var a=store.answers[s.id];if(a&&a.length>0)hasAny=true;});
+    if(!hasAny) return;
+    lines.push('## '+dom.name);
+    domainSteps.forEach(function(s){
+      var answers = store.answers[s.id]||[];
+      if(!answers.length) return;
+      var isGroup = GROUPS.find(function(g){return g.id===s.id;});
+      if(isGroup){
+        var groupHas = domainSteps.filter(function(s2){return s2.id!==s.id&&(store.answers[s2.id]||[]).length>0;}).length;
+        var otherGroups = domainSteps.filter(function(s2){return s2.id!==s.id&&!!GROUPS.find(function(g){return g.id===s2.id;})&&(store.answers[s2.id]||[]).length>0;}).length;
+        var domainHasGroups = GROUPS.some(function(g){return g.parent===dom.id;});
+        if(domainHasGroups){
+          lines.push('### '+s.title);
+        }
+      }
+      answers.forEach(function(a){
+        if(a.type==='concept'){
+          var c = BY_ID[a.id];
+          lines.push('- '+(c?c.name:a.id)+': '+(c?c.desc:''));
+        } else if(a.type==='custom'){
+          lines.push('- (Other): '+a.name);
+        }
+      });
+    });
+    lines.push('');
+  });
+  return lines.join('\n');
+}
+
+/* ---- UI: Setup Form ---- */
+function renderLLMSetup(container){
+  var cfg = loadLLMConfig();
+  var hasKey = !!cfg.apiKey;
+  container.innerHTML = '';
+  var wrapper = document.createElement('div');
+  wrapper.className = 'wizard-content llm-setup';
+  wrapper.innerHTML =
+    '<div class="step-title">LLM-Guided Game Design</div>'+
+    '<div class="step-sub">Describe your game and the LLM will fill out each wizard step for you. For better results, say your team size and skill level and whether the game should be free, not just the actual game mechanics you\u0027d like.</div>'+
+    '<div class="llm-field"><label>Game Description</label>'+
+    '<textarea id="llm-desc" placeholder="Describe the game you want to design..."></textarea></div>'+
+    '<div class="llm-field"><label>API Settings</label>'+
+    '<div class="llm-api-grid">'+
+    '<div class="llm-field"><label>Base URL</label><input type="text" id="llm-baseurl" value="'+escHtml(cfg.baseUrl)+'" placeholder="http://localhost:8080"></div>'+
+    '<div class="llm-field"><label>API Key</label><div class="llm-api-key-wrap">'+
+    '<input type="password" id="llm-apikey" '+(hasKey?'value="••••••••"':'')+' placeholder="'+(hasKey?'(populated)':'Optional')+'" '+(!hasKey?'':'')+'> '+
+    '<button class="llm-key-toggle" id="llm-key-toggle" title="Toggle visibility">\u25b6</button></div></div>'+
+    '<div class="llm-field"><label>Model</label><input type="text" id="llm-model" value="'+escHtml(cfg.model)+'" placeholder="Optional"></div>'+
+    '<div class="llm-field"><label>Max Tokens</label><input type="number" id="llm-maxtokens" value="'+cfg.maxTokens+'" min="64" max="65536"></div>'+
+    '<div class="llm-field"><label>Temperature</label><input type="number" id="llm-temp" value="'+cfg.temperature+'" min="0" max="2" step="0.05"></div>'+
+    '</div>'+
+    '<button class="btn" id="llm-clear-config" style="font-size:10px;padding:4px 8px;">Clear all settings</button></div>'+
+    '<div class="llm-start-row"><button class="btn primary" id="llm-start">Start</button></div>';
+  if(gcaLLMLastRunner){
+    wrapper.innerHTML +=
+      '<div class="llm-start-row" style="margin-top:12px;"><button class="btn" id="llm-back-logs">Back to Logs</button></div>';
+  }
+  container.appendChild(wrapper);
+  document.getElementById('llm-start').onclick = function(){
+    var newCfg = {
+      baseUrl: document.getElementById('llm-baseurl').value.trim(),
+      apiKey: document.getElementById('llm-apikey').type==='password' && document.getElementById('llm-apikey').value==='••••••••' ? cfg.apiKey : document.getElementById('llm-apikey').value,
+      model: document.getElementById('llm-model').value.trim(),
+      maxTokens: document.getElementById('llm-maxtokens').value,
+      temperature: document.getElementById('llm-temp').value
+    };
+    if(!newCfg.baseUrl){document.getElementById('llm-baseurl').focus();return;}
+    saveLLMConfig(newCfg);
+    var userPrompt = document.getElementById('llm-desc').value.trim();
+    if(!userPrompt){document.getElementById('llm-desc').focus();return;}
+    gcaLLMLastRunner = null;
+    gcaLLMRunner = new LLMRunner(newCfg, userPrompt);
+    gcaLLMRunner.start();
+  };
+  document.getElementById('llm-key-toggle').onclick = function(){
+    var inp = document.getElementById('llm-apikey');
+    if(inp.type==='password'){
+      inp.type='text';
+      inp.value = hasKey ? cfg.apiKey : '';
+      this.textContent = '\u25bc';
+    } else {
+      inp.type='password';
+      inp.value = hasKey ? '••••••••' : '';
+      this.textContent = '\u25b6';
+    }
+  };
+  document.getElementById('llm-clear-config').onclick = function(){
+    clearLLMConfig();
+    var c = loadLLMConfig();
+    document.getElementById('llm-baseurl').value = c.baseUrl;
+    document.getElementById('llm-apikey').value = '';
+    document.getElementById('llm-apikey').placeholder = 'Optional';
+    document.getElementById('llm-model').value = c.model;
+    document.getElementById('llm-maxtokens').value = c.maxTokens;
+    document.getElementById('llm-temp').value = c.temperature;
+    document.getElementById('llm-key-toggle').textContent = '\u25b6';
+    document.getElementById('llm-apikey').type = 'password';
+  };
+  var backLogsBtn = document.getElementById('llm-back-logs');
+  if(backLogsBtn){
+    backLogsBtn.onclick = function(){
+      gcaLLMRunner = gcaLLMLastRunner;
+      gcaLLMLastRunner = null;
+      renderLLMInterface();
+    };
+  }
+}
+
+/* ---- UI: Run Interface ---- */
+function renderLLMRun(runner){
+  var main = document.querySelector('.view.active .wizard-main');
+  if(!main) return;
+  var existingWrapper = main.querySelector('.llm-run');
+  var isFirstRender = !existingWrapper;
+
+  if(isFirstRender){
+    main.innerHTML = '';
+    var wrapper = document.createElement('div');
+    wrapper.className = 'llm-run';
+    var ctrl = document.createElement('div');
+    ctrl.className = 'llm-controls';
+    ctrl.innerHTML =
+      '<button class="btn" data-btn="pause"></button>'+
+      '<button class="btn" data-btn="stop">Stop</button>'+
+      '<button class="btn" data-btn="back" style="display:none;">Back to Setup</button>'+
+      '<span class="llm-progress"></span>';
+    wrapper.appendChild(ctrl);
+    var logContainer = document.createElement('div');
+    logContainer.className = 'llm-log-container';
+    var filterBar = createFilterBar(function(){renderLogEntries(logContainer, runner.logs);});
+    logContainer.appendChild(filterBar);
+    wrapper.appendChild(logContainer);
+    var saveRow = document.createElement('div');
+    saveRow.className = 'llm-save-row';
+    saveRow.innerHTML =
+      '<button class="btn" data-btn="md">Save as Markdown</button>'+
+      '<button class="btn" data-btn="json">Save as JSON</button>';
+    wrapper.appendChild(saveRow);
+    main.appendChild(wrapper);
+    saveRow.querySelector('[data-btn="md"]').onclick = function(){
+      var md = exportMarkdown();
+      var blob = new Blob([md],{type:'text/markdown'});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = (studio.design.name||'game-design').replace(/[^a-z0-9\-_]+/gi,'_')+'.md';
+      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    };
+    saveRow.querySelector('[data-btn="json"]').onclick = saveDesignJSON;
+  }
+
+  var wrapper = main.querySelector('.llm-run');
+  var ctrl = wrapper.querySelector('.llm-controls');
+  var pauseBtn = ctrl.querySelector('[data-btn="pause"]');
+  var stopBtn = ctrl.querySelector('[data-btn="stop"]');
+  var backBtn = ctrl.querySelector('[data-btn="back"]');
+  var prog = ctrl.querySelector('.llm-progress');
+
+  pauseBtn.textContent = runner.state==='running'
+    ? (runner._requestInProgress && runner._pendingPause ? 'Cancel Pause' : 'Pause')
+    : (runner.state==='paused' ? 'Resume' : 'Pause');
+  pauseBtn.disabled = !(runner.state==='running'||runner.state==='paused');
+  pauseBtn.onclick = runner.state==='running'
+    ? (runner._requestInProgress && runner._pendingPause ? function(){runner.cancelPause();} : function(){runner.pause();})
+    : (runner.state==='paused' ? function(){runner.resume();} : null);
+  stopBtn.disabled = !(runner.state==='running'||runner.state==='paused');
+  stopBtn.onclick = function(){runner.stop();};
+
+  var showBack = runner.state==='idle'||runner.state==='stopped';
+  backBtn.style.display = showBack ? '' : 'none';
+  if(showBack){
+    backBtn.onclick = function(){
+      gcaLLMLastRunner = gcaLLMRunner;
+      gcaLLMRunner = null;
+      renderLLMInterface();
+    };
+  }
+
+  var done = runner.stats.done+runner.stats.failed+runner.stats.skipped;
+  prog.textContent = done+'/'+runner.steps.length+(runner.eta?' \u00b7 '+runner.eta:'');
+
+  var logContainer = wrapper.querySelector('.llm-log-container');
+  var renderedCount = parseInt(logContainer.dataset.renderedCount||'0');
+  var wasAtBottom = (logContainer.scrollHeight - logContainer.scrollTop - logContainer.clientHeight) < 80;
+  if(runner.logs.length > 0){
+    var lastEntry = runner.logs[runner.logs.length - 1];
+    var lastDomEntry = logContainer.querySelector('[data-id="'+lastEntry.id+'"]');
+    if(lastDomEntry){
+      lastDomEntry.parentNode.replaceChild(renderLogEntry(lastEntry), lastDomEntry);
+    }
+    if(runner.logs.length > renderedCount){
+      var newEntries = runner.logs.slice(Math.max(0, renderedCount - 1));
+      newEntries.forEach(function(entry){
+        if(entry.isChild) return;
+        if(logContainer.querySelector('[data-id="'+entry.id+'"]')) return;
+        if(!gcaLLMLogFilter.has(entry.level)){
+          if(!(entry.children && entry.children.some(function(c){return gcaLLMLogFilter.has(c.level);}))) return;
+        }
+        logContainer.appendChild(renderLogEntry(entry));
+      });
+    }
+    logContainer.dataset.renderedCount = runner.logs.length;
+    if(wasAtBottom){
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+  }
+}
+
+/* ---- UI: Phase Switching ---- */
+function renderLLMInterface(){
+  var main = document.querySelector('.view.active .wizard-main');
+  if(!main) return;
+  if(gcaLLMRunner){
+    renderLLMRun(gcaLLMRunner);
+  } else {
+    renderLLMSetup(main);
+  }
+}
 
 renderAll();
 </script>
