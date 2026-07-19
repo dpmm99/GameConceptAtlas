@@ -27720,6 +27720,8 @@ const COMBO_DIFFICULTY = [
   {a:'g_visualnovel', b:'sy_localization', extra:4, note:'Visual novels carry enormous branching text volume, multiplying translation and QA cost far beyond a linear script.'},
   {a:'mc_deckbuild', b:'sy_balancing', extra:2, note:'A constantly expanding card pool turns balance into a continuously moving target rather than a one-time tuning pass.'},
   {a:'g_bullethell', b:'sy_accessibility', extra:3, note:'Dense, fast-moving projectile patterns are core to the genre\u2019s challenge yet conflict with photosensitivity and reaction-time accommodations.'},
+  {a:'mc_sharedscreen', b:'dm_vis_symmetric', extra:3, note:'You will find it very difficult to hide information from other players on a shared screen.'},
+  {a:'mc_sharedscreen', b:'dm_vis_asymmetric', extra:3, note:'You will find it very difficult to hide information from other players on a shared screen.'},
 ];
 function comboEdgesFor(id){ return COMBO_DIFFICULTY.filter(e=>e.a===id||e.b===id); }
 
