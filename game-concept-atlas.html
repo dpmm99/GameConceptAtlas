@@ -27793,12 +27793,11 @@ function renderSidebar(){
   } else {
     el.innerHTML = `<h3>Design</h3>
       <div style="font-size:12px;color:var(--text-dim);margin-bottom:10px;">${studio.context==='feature' ? 'Building a feature on top of a saved game design.' : 'Walk through every step below, in any order.'}</div>
-      <button class="btn" style="width:100%;margin-bottom:6px;" id="save-json">\ud83d\udcbe Save as JSON</button>
-      <button class="btn" style="width:100%;margin-bottom:6px;" id="load-json">\ud83d\udcc2 Load JSON</button>
+	  <button class="btn" style="width:100%;margin-bottom:6px;" onclick="saveDesignJSON()">\ud83d\udcbe Save as JSON</button>
+	  <button class="btn" style="width:100%;margin-bottom:6px;" onclick="saveAsMarkdown()">\ud83d\udcdd Save as Markdown</button>
+      <button class="btn" style="width:100%;margin-bottom:6px;" onclick="document.getElementById('file-input').click()">\ud83d\udcc2 Load JSON</button>
       <input type="file" id="file-input" accept=".json" style="display:none;">
       <div class="legend-note">Difficulty badges combine each option\u2019s own rating with anything you\u2019ve already picked that makes it harder. A range (e.g. 3\u20137) means an upcoming, not-yet-answered step could push it higher.</div>`;
-    document.getElementById('save-json').onclick = saveDesignJSON;
-    document.getElementById('load-json').onclick = ()=> document.getElementById('file-input').click();
     document.getElementById('file-input').onchange = loadDesignJSON;
   }
 }
@@ -29404,6 +29403,14 @@ function toggleAnswerSilent(step, concept){
 }
 
 /* ---- Markdown Export ---- */
+function saveAsMarkdown(){
+  var md = exportMarkdown();
+  var blob = new Blob([md],{type:'text/markdown'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = (studio.design.name||'game-design').replace(/[^a-z0-9\-_]+/gi,'_')+'.md';
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
 function exportMarkdown(){
   var store = answerStore();
   var lines = [];
@@ -29430,6 +29437,7 @@ function exportMarkdown(){
         var otherGroups = domainSteps.filter(function(s2){return s2.id!==s.id&&!!GROUPS.find(function(g){return g.id===s2.id;})&&(store.answers[s2.id]||[]).length>0;}).length;
         var domainHasGroups = GROUPS.some(function(g){return g.parent===dom.id;});
         if(domainHasGroups){
+		  lines.push('');
           lines.push('### '+s.title);
         }
       }
@@ -29557,14 +29565,7 @@ function renderLLMRun(runner){
       '<button class="btn" data-btn="json">Save as JSON</button>';
     wrapper.appendChild(saveRow);
     main.appendChild(wrapper);
-    saveRow.querySelector('[data-btn="md"]').onclick = function(){
-      var md = exportMarkdown();
-      var blob = new Blob([md],{type:'text/markdown'});
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.href = url; a.download = (studio.design.name||'game-design').replace(/[^a-z0-9\-_]+/gi,'_')+'.md';
-      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-    };
+    saveRow.querySelector('[data-btn="md"]').onclick = saveAsMarkdown;
     saveRow.querySelector('[data-btn="json"]').onclick = saveDesignJSON;
   }
 
