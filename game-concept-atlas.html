@@ -27428,7 +27428,7 @@ C('mc_item_consumables','Consumables','mg_loot','Loot includes single-use items 
 C('mc_item_enhancements','Enhancement items','mg_loot','Loot includes slottable upgrades that improve existing equipment after acquisition.',{deps:['mc_enhancement'],rel:['mc_crafting','mc_respec'],diff:2}),
 C('mc_item_cosmetics','Cosmetics','mg_loot','Loot includes purely visual modifications to characters, gear, or environments.',{deps:[],rel:['mc_costumes','mc_charcustom','sy_monetization'],diff:3}),
 C('mc_item_keys','Keys & triggers','mg_loot','Loot includes items that unlock new areas, advance the story, or gate specific abilities.',{deps:[],rel:['mc_charprogression','mc_worldenv_ref','sy_narrative','sy_unlockables'],diff:1}),
-C('mc_item_currencies','Currencies','mg_loot','Loot includes spendable numerical resources that can be exchanged for goods or services.',{deps:[],rel:['mc_crafting','mc_trading','dm_econ_single','dm_econ_multi'],diff:2}),
+C('mc_item_currencies','Currencies','mg_loot','Loot includes spendable numerical resources that can be exchanged for goods or services.',{deps:[['dm_econ_single','dm_econ_multi']],rel:['mc_crafting','mc_trading'],diff:2}),
 
 /* ================= MECHANICS: World (mg_world) ================= */
 C('mc_open_world','Open-world exploration','mg_world','A continuous traversable world encouraging free-form discovery.',{deps:['sy_colliders','mc_worldenv_ref'],rel:['mc_basebuild','mc_dynamicevents','mc_missionstruct'],diff:7}),
@@ -27705,101 +27705,108 @@ function perspOf(node){ if(node.persp) return node.persp; const d=domainOf(node)
 const CAT_SEEN = {};
 CONCEPTS.forEach(c=>{ const d = domainOf(c); const key=d?d.id:'x'; CAT_SEEN[key]=(CAT_SEEN[key]||0)+1; c.num = String(CAT_SEEN[key]).padStart(3,'0'); });
 
+/* Normalize deps: flatten either-or groups into individual IDs.
+   deps can contain strings (hard req) or arrays of strings (pick any one). */
+function flattenDeps(deps){
+  const out=[];
+  (deps||[]).forEach(d=>{ Array.isArray(d) ? d.forEach(id=>out.push(id)) : out.push(d); });
+  return out;
+}
 const REQUIRED_BY = {};
-CONCEPTS.forEach(c=> c.deps.forEach(d=>{ (REQUIRED_BY[d]=REQUIRED_BY[d]||[]).push(c.id); }));
+CONCEPTS.forEach(c=> flattenDeps(c.deps).forEach(d=>{ (REQUIRED_BY[d]=REQUIRED_BY[d]||[]).push(c.id); }));
 
 /* ============ difficulty combo edges ============ */
 const COMBO_DIFFICULTY = [
-  {a:'sy_rollback_tb', b:'sy_replay', extra:-1, note:'A replay system already provides the input-recording and state-restoration primitives that turn-based rollback builds on top of.'},
-  {a:'g_word', b:'sy_localization', extra:4, note:'Word games are inherently language-locked; localizing requires complete dictionary replacement, rule adaptation, and often fundamental redesign.'},
-  {a:'mc_pvp', b:'sy_multiplayer_net', extra:2, note:'Competitive stakes make desync and unfair advantage far more costly.'},
-  {a:'mc_legacy', b:'sy_save_system', extra:1, note:'Irreversible state changes demand robust save versioning and careful handling of permanent mutations to avoid corruption or unintended resets, as well as separation of per-game and per-account save data.'},
-  {a:'mc_realtime_combat', b:'sy_enemyai', extra:1, note:'AI must react to continuous player input and manage attack timing/positioning without turn-based safety nets.'},
-  {a:'mc_archetype', b:'mc_pvp', extra:2, note:'Role diversity requires strict rock-paper-scissors balance to prevent dominant or useless picks in competitive play.'},
-  {a:'mc_charcustom', b:'sy_3danim', extra:2, note:'Dynamic part swapping requires complex rigging, blend trees, and LOD management to prevent animation clipping or glitches.'},
-  {a:'mc_open_world', b:'sy_multiplayer_net', extra:3, note:'Streaming, population sync, and state management across a seamless world multiply netcode and server complexity.'},
-  {a:'mc_basebuild', b:'mc_multiplayer', extra:2, note:'Shared, persistent structures need conflict resolution when players build simultaneously.'},
-  {a:'mc_dynamicevents', b:'sy_multiplayer_net', extra:2, note:'Events must dynamically adjust difficulty, rewards, and state when players join or leave mid-event, requiring robust sync and recalculation.'},
-  {a:'mc_housing', b:'sy_offline_sync', extra:2, note:'Player-authored spaces need complex conflict resolution when synced after offline play.'},
-  {a:'mc_housing_guildhall', b:'sy_offline_sync', extra:2, note:'Resolving divergent edits from multiple offline players is significantly harder than single-player housing sync.'},
-  {a:'mc_nemesis', b:'sy_procgen', extra:1, note:'Persistent generated rivals compound state management with procedural generation.'},
-  {a:'mc_duoqueue', b:'sy_matchmaking', extra:1, note:'Requires sophisticated skill-gap balancing and fallback logic to avoid frustrating either the mentor or the mentee.'},
-  {a:'sy_depdecl', b:'sy_modding', extra:2, note:'Mod support requires the dependency system to safely resolve and validate external, user-authored asset paths without breaking the base game.'},
-  {a:'sy_predictload', b:'sy_procgen', extra:2, note:'Predicting load targets in a procedurally generated world requires forecasting generation seeds and chunk boundaries dynamically.'},
-  {a:'sy_debugtools', b:'sy_multiplayer_net', extra:1, note:'Network desyncs require specialized packet inspection, state serialization and deterministic replay tools to diagnose.'},
-  {a:'sy_debugtools', b:'sy_procgen', extra:1, note:'Procedural systems demand seed control, visualization overlays and deterministic stepping to trace generation logic.'},
-  {a:'sy_debugtools', b:'sy_enemyai', extra:1, note:'AI debugging requires real-time visualization of decision trees, navmesh paths and state machines.'},
-  {a:'sy_modding', b:'sy_savemigrate', extra:2, note:'Modded save structures often diverge from vanilla, making versioned migration scripts fragile and exponentially harder to test across community content.'},
-  {a:'sy_modding', b:'sy_save_system', extra:1, note:'Mod-added data structures and altered rules require flexible serialization and strict versioning to prevent corruption.'},
-  {a:'sy_procgen', b:'sy_save_system', extra:1, note:'Serializing, compressing and reliably restoring complex generated states without save bloat or corruption.'},
-  {a:'sy_colliders', b:'sy_procgen', extra:1, note:'Dynamically generating valid, performant collision meshes alongside visual geometry.'},
-  {a:'sy_pathing', b:'sy_procgen', extra:1, note:'Navigation graphs must be rebuilt or patched on the fly as procedurally generated layouts come into existence.'},
-  {a:'sy_pathing', b:'sy_enemyai', extra:1, note:'AI must dynamically adapt navigation and tactics to unpredictable, algorithmically generated layouts.'},
-  {a:'sy_multiplayer_net', b:'sy_procgen', extra:1, note:'Generated content must be identical, or explicitly synced, across every client.'},
-  {a:'sy_replay', b:'sy_rollback', extra:2, note:'Rollback netcode breaks linear determinism, requiring complex state-snapshot or simulation-replay workarounds.'},
-  {a:'sy_anticheat', b:'sy_crossplay', extra:3, note:'Differing anti-cheat capabilities and kernel-level access across platforms complicate building one unified enforcement layer.'},
-  {a:'sy_anticheat', b:'sy_modding', extra:3, note:'Exposing hooks and APIs for player-made content is directly in tension with locking the client down against unauthorized manipulation.'},
-  {a:'sy_anticheat', b:'sy_workshop', extra:2, note:'Community-distributed content requires automated scanning, sandboxing and runtime integrity checks to prevent exploits or unfair advantages.'},
-  {a:'sy_anticheat', b:'sy_clientpred', extra:1, note:'Client-side prediction expands the validation surface, requiring stricter server-side reconciliation to catch exploits.'},
-  {a:'sy_anticheat', b:'sy_spectator', extra:1, note:'Spectator clients receive full positional data, requiring strict permission gating to prevent info-leaking to cheaters.'},
-  {a:'sy_anticheat', b:'sy_offline_sync', extra:2, note:'Offline sessions bypass real-time server validation, requiring robust local integrity checks and post-hoc audit trails.'},
-  {a:'sy_crossplay', b:'sy_multiplayer_net', extra:1, note:'Different platforms bring different input latency and performance profiles to reconcile.'},
-  {a:'sy_crossplay', b:'sy_matchmaking', extra:1, note:'Cross-platform queues require rating normalization, input-parity handling, and platform-specific matchmaking rules.'},
-  {a:'sy_accounts', b:'sy_legal', extra:2, note:'GDPR, COPPA, and regional compliance drastically complicate signup flows, data storage, and consent management.'},
-  {a:'sy_chat', b:'sy_localization', extra:1, note:'Dynamic chat text must flex for varying language lengths, RTL scripts, and platform-specific character encoding limits.'},
-  {a:'sy_moderation', b:'sy_voip', extra:2, note:'Real-time voice moderation requires server-side recording, transcription, or automated toxicity detection.'},
-  {a:'sy_hotfix', b:'sy_multiplayer_net', extra:1, note:'Deploying hotfixes to live multiplayer requires careful version gating, potential server restarts, and strict client-server compatibility checks.'},
-  {a:'sy_abtesting', b:'sy_multiplayer_net', extra:1, note:'Variant assignment must be consistent across all clients in a session, and cross-variant interactions must be handled or prevented.'},
-  {a:'sy_abtesting', b:'sy_monetization', extra:1, note:'Live-testing pricing and offers requires careful economy safeguards to prevent exploitation or player backlash.'},
-  {a:'sy_entitlements', b:'sy_multiplatform', extra:1, note:'Each platform (Steam, Epic, consoles) uses different DRM, license tokens, and store APIs that must be abstracted and validated.'},
-  {a:'sy_entitlements', b:'sy_offline_sync', extra:1, note:'Offline play requires secure local caching of entitlements with periodic server re-validation to prevent piracy.'},
-  {a:'sy_cloudsync', b:'sy_savemigrate', extra:1, note:'Cloud saves require migration to resolve consistently across devices, adding conflict-resolution overhead when versions mismatch.'},
-  {a:'sy_bugreport', b:'sy_modding', extra:1, note:'Reports must capture active mod lists, load orders, and version hashes to be reproducible.'},
-  {a:'sy_bugreport', b:'sy_multiplayer_net', extra:1, note:'Capturing network state, latency logs, and session IDs adds significant parsing overhead.'},
-  {a:'sy_controls', b:'sy_multiplatform', extra:1, note:'Normalizing inputs across keyboard, gamepad, touch, and platform-specific APIs while maintaining consistent feel and passing certification.'},
-  {a:'sy_graphicsopts', b:'sy_multiplatform', extra:2, note:'Graphics settings must be carefully bounded and tested across wildly different hardware capabilities, APIs, and platform certification requirements.'},
-  {a:'sy_audioduck', b:'th_horror', extra:1, note:'Horror relies on precise audio tension; mixing must dynamically prioritize subtle environmental cues without breaking immersion or masking critical gameplay feedback.'},
-  {a:'sy_balancing', b:'mc_multiplayer', extra:2, note:'Competitive multiplayer demands tighter, more rigorous balance to prevent dominant strategies or pay-to-win dynamics.'},
-  {a:'sy_balancing', b:'sy_monetization', extra:1, note:'Monetization layers require careful separation of power from price to maintain fair gameplay.'},
-  {a:'sy_narrative', b:'sy_procgen', extra:2, note:'Hand-crafted story beats clash with algorithmic content generation, requiring complex fallback or modular narrative systems.'},
-  {a:'sy_envstory', b:'sy_procgen', extra:2, note:'Procedurally generated spaces struggle to convey intentional, consistent narrative cues without heavy templating or rule-based placement systems.'},
-  {a:'sy_accessibility', b:'sy_juice', extra:1, note:'Juice effects like screen shake, hit-stop and intense VFX must be toggleable or scalable to prevent motion sickness and cognitive overload.'},
-  {a:'sy_accessibility', b:'sy_localization', extra:1, note:'Text scaling and font changes compound with translation length variations, frequently breaking UI layouts.'},
-  {a:'sy_localization', b:'sy_profanity', extra:2, note:'Profanity is highly culture-specific; maintaining accurate, low-latency filters across multiple languages multiplies curation and false-positive risks.'},
-  {a:'sy_localization', b:'sy_storefront', extra:1, note:'Dynamic pricing, currency formatting, and regional content restrictions require careful localization handling.'},
-  {a:'sy_localization', b:'sy_sttts', extra:1, note:'Each supported language requires separate model tuning, latency handling, and accuracy validation.'},
-  {a:'sy_localization', b:'sy_legal', extra:3, note:'Legal jurisdictions and translation of legally-binding language multiply the complexity of covering your legal bases.'},
-  {a:'sy_legal', b:'sy_profiles', extra:1, note:'Public data exposure requires strict consent management, data minimization, and regional compliance routing.'},
-  {a:'sy_legal', b:'sy_monetization', extra:2, note:'Real-money transactions, loot boxes, and regional payment regulations drastically increase legal complexity.'},
-  {a:'sy_legal', b:'sy_logging', extra:1, note:'Telemetry systems must respect privacy settings, data retention limits, and anonymization requirements.'},
-  {a:'dm_vis_symmetric', b:'mc_multiplayer', extra:1, note:'Hidden information must be enforced server-side so clients truly can\u2019t see what they shouldn\u2019t.'},
-  {a:'dm_vis_asymmetric', b:'mc_multiplayer', extra:1, note:'Hidden information must be enforced server-side so clients truly can\u2019t see what they shouldn\u2019t.'},
-  {a:'dm_pace_realtime', b:'sy_multiplayer_net', extra:2, note:'Real-time state must stay in sync across every client; prediction, interpolation and rollback all get harder.'},
-  {a:'dm_pace_realtime', b:'dm_pc_massive', extra:2, note:'Real-time interaction scales combinatorially with player count, straining both netcode synchronization and client performance.'},
-  {a:'dm_theme_integrated', b:'sy_procgen', extra:1, note:'Algorithmically generated content must still feel thematically coherent, requiring complex constraints and curated asset pools rather than pure randomness.'},
-  {a:'dm_pc_massive', b:'sy_multiplayer_net', extra:3, note:'Large simultaneous player counts multiply every netcode problem at once.'},
-  {a:'dm_diffc_adaptive', b:'sy_multiplayer_net', extra:1, note:'Synchronizing dynamic difficulty states across clients requires careful design to prevent desync or unfair advantages.'},
-  {a:'dm_onb_mentor', b:'sy_matchmaking', extra:1, note:'Matchmaking must filter and pair by experience level rather than just skill or latency, adding complex ranking logic.'},
-  {a:'as_pixel_palette', b:'sy_accessibility', extra:1, note:'Strictly limited palettes can inadvertently create colorblind accessibility issues, requiring careful color selection and fallback testing.'},
-  {a:'as_pixel_res', b:'sy_multiplatform', extra:1, note:'Handling integer scaling, letterboxing, and UI adaptation across varying aspect ratios and DPIs adds significant pipeline complexity.'},
-  {a:'as_photoreal', b:'sy_multiplatform', extra:3, note:'High-fidelity assets must still perform across every target platform\u2019s hardware ceiling.'},
-  {a:'g_soulslike', b:'sy_accessibility', extra:3, note:'The genre\u2019s identity is built on punishing, uncompromising difficulty, which is in direct tension with many standard difficulty-assist accommodations.'},
-  {a:'g_visualnovel', b:'sy_localization', extra:4, note:'Visual novels carry enormous branching text volume, multiplying translation and QA cost far beyond a linear script.'},
-  {a:'mc_deckbuild', b:'sy_balancing', extra:2, note:'A constantly expanding card pool turns balance into a continuously moving target rather than a one-time tuning pass.'},
-  {a:'g_bullethell', b:'sy_accessibility', extra:3, note:'Dense, fast-moving projectile patterns are core to the genre\u2019s challenge yet conflict with photosensitivity and reaction-time accommodations.'},
-  {a:'mc_sharedscreen', b:'dm_vis_symmetric', extra:3, note:'You will find it very difficult to hide information from other players on a shared screen.'},
-  {a:'mc_sharedscreen', b:'dm_vis_asymmetric', extra:3, note:'You will find it very difficult to hide information from other players on a shared screen.'},
-  {a:'mc_aoe', b:'sy_multiplayer_net', extra:1, note:'Every entity caught in a shaped effect must be resolved identically on every client without desyncing hit results.'},
-  {a:'mc_combos', b:'sy_multiplayer_net', extra:1, note:'Tight input-chained timing windows are far harder to keep fair once latency and reconciliation enter the picture.'},
-  {a:'mc_biomes', b:'sy_procgen', extra:2, note:'Procedurally blending distinct biome rules and assets at their boundaries multiplies the constraints a generator must satisfy.'},
-  {a:'mc_minimap', b:'sy_procgen', extra:1, note:'A minimap must be regenerated or patched alongside every procedurally generated layout change.'},
-  {a:'mc_factions', b:'sy_narrative', extra:2, note:'Each playable faction typically needs its own story beats, dialogue variants, and framing to avoid feeling reskinned.'},
-  {a:'mc_factions', b:'sy_localization', extra:1, note:'Faction-specific text and voice lines multiply the volume that must be translated and re-recorded.'},
-  {a:'sy_testing', b:'sy_multiplayer_net', extra:2, note:'Network nondeterminism makes automated tests hard to reproduce reliably without dedicated deterministic-replay tooling.'},
-  {a:'sy_testing', b:'sy_procgen', extra:1, note:'Procedurally generated content requires seed-based test fixtures to keep test cases reproducible.'},
-  {a:'sy_textrender_multi', b:'sy_textrender_rich', extra:1, note:'Combining inline formatting with variable-width, RTL, or vertical scripts multiplies the layout cases that must be handled correctly.'},
+  {ids: ['sy_rollback_tb', 'sy_replay'], extra:-1, note:'A replay system already provides the input-recording and state-restoration primitives that turn-based rollback builds on top of.'},
+  {ids: ['g_word', 'sy_localization'], extra:4, note:'Word games are inherently language-locked; localizing requires complete dictionary replacement, rule adaptation, and often fundamental redesign.'},
+  {ids: ['mc_pvp', 'sy_multiplayer_net'], extra:2, note:'Competitive stakes make desync and unfair advantage far more costly.'},
+  {ids: ['mc_legacy', 'sy_save_system'], extra:1, note:'Irreversible state changes demand robust save versioning and careful handling of permanent mutations to avoid corruption or unintended resets, as well as separation of per-game and per-account save data.'},
+  {ids: ['mc_realtime_combat', 'sy_enemyai'], extra:1, note:'AI must react to continuous player input and manage attack timing/positioning without turn-based safety nets.'},
+  {ids: ['mc_archetype', 'mc_pvp'], extra:2, note:'Role diversity requires strict rock-paper-scissors balance to prevent dominant or useless picks in competitive play.'},
+  {ids: ['mc_charcustom', 'sy_3danim'], extra:2, note:'Dynamic part swapping requires complex rigging, blend trees, and LOD management to prevent animation clipping or glitches.'},
+  {ids: ['mc_open_world', 'sy_multiplayer_net'], extra:3, note:'Streaming, population sync, and state management across a seamless world multiply netcode and server complexity.'},
+  {ids: ['mc_basebuild', 'mc_multiplayer'], extra:2, note:'Shared, persistent structures need conflict resolution when players build simultaneously.'},
+  {ids: ['mc_dynamicevents', 'sy_multiplayer_net'], extra:2, note:'Events must dynamically adjust difficulty, rewards, and state when players join or leave mid-event, requiring robust sync and recalculation.'},
+  {ids: ['mc_housing', 'sy_offline_sync'], extra:2, note:'Player-authored spaces need complex conflict resolution when synced after offline play.'},
+  {ids: ['mc_housing_guildhall', 'sy_offline_sync'], extra:2, note:'Resolving divergent edits from multiple offline players is significantly harder than single-player housing sync.'},
+  {ids: ['mc_nemesis', 'sy_procgen'], extra:1, note:'Persistent generated rivals compound state management with procedural generation.'},
+  {ids: ['mc_duoqueue', 'sy_matchmaking'], extra:1, note:'Requires sophisticated skill-gap balancing and fallback logic to avoid frustrating either the mentor or the mentee.'},
+  {ids: ['sy_depdecl', 'sy_modding'], extra:2, note:'Mod support requires the dependency system to safely resolve and validate external, user-authored asset paths without breaking the base game.'},
+  {ids: ['sy_predictload', 'sy_procgen'], extra:2, note:'Predicting load targets in a procedurally generated world requires forecasting generation seeds and chunk boundaries dynamically.'},
+  {ids: ['sy_debugtools', 'sy_multiplayer_net'], extra:1, note:'Network desyncs require specialized packet inspection, state serialization and deterministic replay tools to diagnose.'},
+  {ids: ['sy_debugtools', 'sy_procgen'], extra:1, note:'Procedural systems demand seed control, visualization overlays and deterministic stepping to trace generation logic.'},
+  {ids: ['sy_debugtools', 'sy_enemyai'], extra:1, note:'AI debugging requires real-time visualization of decision trees, navmesh paths and state machines.'},
+  {ids: ['sy_modding', 'sy_savemigrate'], extra:2, note:'Modded save structures often diverge from vanilla, making versioned migration scripts fragile and exponentially harder to test across community content.'},
+  {ids: ['sy_modding', 'sy_save_system'], extra:1, note:'Mod-added data structures and altered rules require flexible serialization and strict versioning to prevent corruption.'},
+  {ids: ['sy_procgen', 'sy_save_system'], extra:1, note:'Serializing, compressing and reliably restoring complex generated states without save bloat or corruption.'},
+  {ids: ['sy_colliders', 'sy_procgen'], extra:1, note:'Dynamically generating valid, performant collision meshes alongside visual geometry.'},
+  {ids: ['sy_pathing', 'sy_procgen'], extra:1, note:'Navigation graphs must be rebuilt or patched on the fly as procedurally generated layouts come into existence.'},
+  {ids: ['sy_pathing', 'sy_enemyai'], extra:1, note:'AI must dynamically adapt navigation and tactics to unpredictable, algorithmically generated layouts.'},
+  {ids: ['sy_multiplayer_net', 'sy_procgen'], extra:1, note:'Generated content must be identical, or explicitly synced, across every client.'},
+  {ids: ['sy_replay', 'sy_rollback'], extra:2, note:'Rollback netcode breaks linear determinism, requiring complex state-snapshot or simulation-replay workarounds.'},
+  {ids: ['sy_anticheat', 'sy_crossplay'], extra:3, note:'Differing anti-cheat capabilities and kernel-level access across platforms complicate building one unified enforcement layer.'},
+  {ids: ['sy_anticheat', 'sy_modding'], extra:3, note:'Exposing hooks and APIs for player-made content is directly in tension with locking the client down against unauthorized manipulation.'},
+  {ids: ['sy_anticheat', 'sy_workshop'], extra:2, note:'Community-distributed content requires automated scanning, sandboxing and runtime integrity checks to prevent exploits or unfair advantages.'},
+  {ids: ['sy_anticheat', 'sy_clientpred'], extra:1, note:'Client-side prediction expands the validation surface, requiring stricter server-side reconciliation to catch exploits.'},
+  {ids: ['sy_anticheat', 'sy_spectator'], extra:1, note:'Spectator clients receive full positional data, requiring strict permission gating to prevent info-leaking to cheaters.'},
+  {ids: ['sy_anticheat', 'sy_offline_sync'], extra:2, note:'Offline sessions bypass real-time server validation, requiring robust local integrity checks and post-hoc audit trails.'},
+  {ids: ['sy_crossplay', 'sy_multiplayer_net'], extra:1, note:'Different platforms bring different input latency and performance profiles to reconcile.'},
+  {ids: ['sy_crossplay', 'sy_matchmaking'], extra:1, note:'Cross-platform queues require rating normalization, input-parity handling, and platform-specific matchmaking rules.'},
+  {ids: ['sy_accounts', 'sy_legal'], extra:2, note:'GDPR, COPPA, and regional compliance drastically complicate signup flows, data storage, and consent management.'},
+  {ids: ['sy_chat', 'sy_localization'], extra:1, note:'Dynamic chat text must flex for varying language lengths, RTL scripts, and platform-specific character encoding limits.'},
+  {ids: ['sy_moderation', 'sy_voip'], extra:2, note:'Real-time voice moderation requires server-side recording, transcription, or automated toxicity detection.'},
+  {ids: ['sy_hotfix', 'sy_multiplayer_net'], extra:1, note:'Deploying hotfixes to live multiplayer requires careful version gating, potential server restarts, and strict client-server compatibility checks.'},
+  {ids: ['sy_abtesting', 'sy_multiplayer_net'], extra:1, note:'Variant assignment must be consistent across all clients in a session, and cross-variant interactions must be handled or prevented.'},
+  {ids: ['sy_abtesting', 'sy_monetization'], extra:1, note:'Live-testing pricing and offers requires careful economy safeguards to prevent exploitation or player backlash.'},
+  {ids: ['sy_entitlements', 'sy_multiplatform'], extra:1, note:'Each platform (Steam, Epic, consoles) uses different DRM, license tokens, and store APIs that must be abstracted and validated.'},
+  {ids: ['sy_entitlements', 'sy_offline_sync'], extra:1, note:'Offline play requires secure local caching of entitlements with periodic server re-validation to prevent piracy.'},
+  {ids: ['sy_cloudsync', 'sy_savemigrate'], extra:1, note:'Cloud saves require migration to resolve consistently across devices, adding conflict-resolution overhead when versions mismatch.'},
+  {ids: ['sy_bugreport', 'sy_modding'], extra:1, note:'Reports must capture active mod lists, load orders, and version hashes to be reproducible.'},
+  {ids: ['sy_bugreport', 'sy_multiplayer_net'], extra:1, note:'Capturing network state, latency logs, and session IDs adds significant parsing overhead.'},
+  {ids: ['sy_controls', 'sy_multiplatform'], extra:1, note:'Normalizing inputs across keyboard, gamepad, touch, and platform-specific APIs while maintaining consistent feel and passing certification.'},
+  {ids: ['sy_graphicsopts', 'sy_multiplatform'], extra:2, note:'Graphics settings must be carefully bounded and tested across wildly different hardware capabilities, APIs, and platform certification requirements.'},
+  {ids: ['sy_audioduck', 'th_horror'], extra:1, note:'Horror relies on precise audio tension; mixing must dynamically prioritize subtle environmental cues without breaking immersion or masking critical gameplay feedback.'},
+  {ids: ['sy_balancing', 'mc_multiplayer'], extra:2, note:'Competitive multiplayer demands tighter, more rigorous balance to prevent dominant strategies or pay-to-win dynamics.'},
+  {ids: ['sy_balancing', 'sy_monetization'], extra:1, note:'Monetization layers require careful separation of power from price to maintain fair gameplay.'},
+  {ids: ['sy_narrative', 'sy_procgen'], extra:2, note:'Hand-crafted story beats clash with algorithmic content generation, requiring complex fallback or modular narrative systems.'},
+  {ids: ['sy_envstory', 'sy_procgen'], extra:2, note:'Procedurally generated spaces struggle to convey intentional, consistent narrative cues without heavy templating or rule-based placement systems.'},
+  {ids: ['sy_accessibility', 'sy_juice'], extra:1, note:'Juice effects like screen shake, hit-stop and intense VFX must be toggleable or scalable to prevent motion sickness and cognitive overload.'},
+  {ids: ['sy_accessibility', 'sy_localization'], extra:1, note:'Text scaling and font changes compound with translation length variations, frequently breaking UI layouts.'},
+  {ids: ['sy_localization', 'sy_profanity'], extra:2, note:'Profanity is highly culture-specific; maintaining accurate, low-latency filters across multiple languages multiplies curation and false-positive risks.'},
+  {ids: ['sy_localization', 'sy_storefront'], extra:1, note:'Dynamic pricing, currency formatting, and regional content restrictions require careful localization handling.'},
+  {ids: ['sy_localization', 'sy_sttts'], extra:1, note:'Each supported language requires separate model tuning, latency handling, and accuracy validation.'},
+  {ids: ['sy_localization', 'sy_legal'], extra:3, note:'Legal jurisdictions and translation of legally-binding language multiply the complexity of covering your legal bases.'},
+  {ids: ['sy_legal', 'sy_profiles'], extra:1, note:'Public data exposure requires strict consent management, data minimization, and regional compliance routing.'},
+  {ids: ['sy_legal', 'sy_monetization'], extra:2, note:'Real-money transactions, loot boxes, and regional payment regulations drastically increase legal complexity.'},
+  {ids: ['sy_legal', 'sy_logging'], extra:1, note:'Telemetry systems must respect privacy settings, data retention limits, and anonymization requirements.'},
+  {ids: ['dm_vis_symmetric', 'mc_multiplayer'], extra:1, note:'Hidden information must be enforced server-side so clients truly can\u2019t see what they shouldn\u2019t.'},
+  {ids: ['dm_vis_asymmetric', 'mc_multiplayer'], extra:1, note:'Hidden information must be enforced server-side so clients truly can\u2019t see what they shouldn\u2019t.'},
+  {ids: ['dm_pace_realtime', 'sy_multiplayer_net'], extra:2, note:'Real-time state must stay in sync across every client; prediction, interpolation and rollback all get harder.'},
+  {ids: ['dm_pace_realtime', 'dm_pc_massive'], extra:2, note:'Real-time interaction scales combinatorially with player count, straining both netcode synchronization and client performance.'},
+  {ids: ['dm_theme_integrated', 'sy_procgen'], extra:1, note:'Algorithmically generated content must still feel thematically coherent, requiring complex constraints and curated asset pools rather than pure randomness.'},
+  {ids: ['dm_pc_massive', 'sy_multiplayer_net'], extra:3, note:'Large simultaneous player counts multiply every netcode problem at once.'},
+  {ids: ['dm_diffc_adaptive', 'sy_multiplayer_net'], extra:1, note:'Synchronizing dynamic difficulty states across clients requires careful design to prevent desync or unfair advantages.'},
+  {ids: ['dm_onb_mentor', 'sy_matchmaking'], extra:1, note:'Matchmaking must filter and pair by experience level rather than just skill or latency, adding complex ranking logic.'},
+  {ids: ['as_pixel_palette', 'sy_accessibility'], extra:1, note:'Strictly limited palettes can inadvertently create colorblind accessibility issues, requiring careful color selection and fallback testing.'},
+  {ids: ['as_pixel_res', 'sy_multiplatform'], extra:1, note:'Handling integer scaling, letterboxing, and UI adaptation across varying aspect ratios and DPIs adds significant pipeline complexity.'},
+  {ids: ['as_photoreal', 'sy_multiplatform'], extra:3, note:'High-fidelity assets must still perform across every target platform\u2019s hardware ceiling.'},
+  {ids: ['g_soulslike', 'sy_accessibility'], extra:3, note:'The genre\u2019s identity is built on punishing, uncompromising difficulty, which is in direct tension with many standard difficulty-assist accommodations.'},
+  {ids: ['g_visualnovel', 'sy_localization'], extra:4, note:'Visual novels carry enormous branching text volume, multiplying translation and QA cost far beyond a linear script.'},
+  {ids: ['mc_deckbuild', 'sy_balancing'], extra:2, note:'A constantly expanding card pool turns balance into a continuously moving target rather than a one-time tuning pass.'},
+  {ids: ['g_bullethell', 'sy_accessibility'], extra:3, note:'Dense, fast-moving projectile patterns are core to the genre\u2019s challenge yet conflict with photosensitivity and reaction-time accommodations.'},
+  {ids: ['mc_sharedscreen', 'dm_vis_symmetric'], extra:3, note:'You will find it very difficult to hide information from other players on a shared screen.'},
+  {ids: ['mc_sharedscreen', 'dm_vis_asymmetric'], extra:3, note:'You will find it very difficult to hide information from other players on a shared screen.'},
+  {ids: ['mc_aoe', 'sy_multiplayer_net'], extra:1, note:'Every entity caught in a shaped effect must be resolved identically on every client without desyncing hit results.'},
+  {ids: ['mc_combos', 'sy_multiplayer_net'], extra:1, note:'Tight input-chained timing windows are far harder to keep fair once latency and reconciliation enter the picture.'},
+  {ids: ['mc_biomes', 'sy_procgen'], extra:2, note:'Procedurally blending distinct biome rules and assets at their boundaries multiplies the constraints a generator must satisfy.'},
+  {ids: ['mc_minimap', 'sy_procgen'], extra:1, note:'A minimap must be regenerated or patched alongside every procedurally generated layout change.'},
+  {ids: ['mc_factions', 'sy_narrative'], extra:2, note:'Each playable faction typically needs its own story beats, dialogue variants, and framing to avoid feeling reskinned.'},
+  {ids: ['mc_factions', 'sy_localization'], extra:1, note:'Faction-specific text and voice lines multiply the volume that must be translated and re-recorded.'},
+  {ids: ['sy_inttest', 'sy_multiplayer_net'], extra:2, note:'Network nondeterminism makes automated tests hard to reproduce reliably without dedicated deterministic-replay tooling.'},
+  {ids: ['sy_inttest', 'sy_procgen'], extra:1, note:'Procedurally generated content requires seed-based test fixtures to keep test cases reproducible.'},
+  {ids: ['sy_textrender_multi', 'sy_textrender_rich'], extra:1, note:'Combining inline formatting with variable-width, RTL, or vertical scripts multiplies the layout cases that must be handled correctly.'},
 ];
-function comboEdgesFor(id){ return COMBO_DIFFICULTY.filter(e=>e.a===id||e.b===id); }
+function comboEdgesFor(id){ return COMBO_DIFFICULTY.filter(e=>e.ids.includes(id)); }
 
 /* =============================================================
    GLOBAL STATE
@@ -27957,11 +27964,11 @@ function buildGraphData(){
   CONCEPTS.forEach(c=>{
     if(!visible.has(c.id)) return;
     if(c.parent && visible.has(c.parent)) links.push({source:c.parent,target:c.id,type:'rel'});
-    c.deps.forEach(t=>{ if(visible.has(t)) links.push({source:t,target:c.id,type:'dep'}); });
+    flattenDeps(c.deps).forEach(t=>{ if(visible.has(t)) links.push({source:t,target:c.id,type:'dep'}); });
     c.rel.forEach(t=>{ if(visible.has(t)) links.push({source:c.id,target:t,type:'rel'}); });
     c.mutex.forEach(t => { if(visible.has(t)) links.push({source:c.id, target:t, type:'mutex'}); });
   });
-  COMBO_DIFFICULTY.forEach(e=>{ if(visible.has(e.a)&&visible.has(e.b)) links.push({source:e.a,target:e.b,type:'combo',note:e.note,extra:e.extra}); });
+  COMBO_DIFFICULTY.forEach(e=>{ const ids=e.ids; if(!ids.every(id=>visible.has(id))) return; for(let i=0;i<ids.length;i++) for(let j=i+1;j<ids.length;j++) links.push({source:ids[i],target:ids[j],type:'combo',note:e.note,extra:e.extra}); });
   return {nodes,links};
 }
 function degreeOf(id,links){ return links.filter(l=>(l.source.id||l.source)===id||(l.target.id||l.target)===id).length; }
@@ -28007,7 +28014,7 @@ function renderWeb(){
 }
 function highlightNeighbors(id){
   if(!gNode) return; const c=BY_ID[id]; if(!c) return;
-  const neigh=new Set([id, ...(c.deps||[]), ...relatedOf(id), ...(REQUIRED_BY[id]||[]), ...comboEdgesFor(id).map(e=>e.a===id?e.b:e.a), ...(BY_ID[c.parent]?.kind==='concept'?[c.parent]:[]), ...(CHILDREN_OF[id]||[])]);
+  const neigh=new Set([id, ...flattenDeps(c.deps), ...relatedOf(id), ...(REQUIRED_BY[id]||[]), ...comboEdgesFor(id).flatMap(e=>e.ids.filter(i=>i!==id)), ...(BY_ID[c.parent]?.kind==='concept'?[c.parent]:[]), ...(CHILDREN_OF[id]||[])]);
   gNode.classed('faded', d=>!neigh.has(d.id));
   gLink.classed('faded', l=>{ const s=l.source.id||l.source,t=l.target.id||l.target; return !(neigh.has(s)&&neigh.has(t)); });
   gLink.classed('lit', l=>{ const s=l.source.id||l.source,t=l.target.id||l.target; return s===id||t===id; });
@@ -28036,13 +28043,29 @@ function openDetail(id, fromWeb){
   const body=document.getElementById('detail-body');
   const combos = comboEdgesFor(id);
   const related = Array.from(relatedOf(id));
-  const comboHTML = combos.length ? combos.map(e=>{ const other=e.a===id?e.b:e.a; const on=BY_ID[other]; const sign=e.extra>0?'+':''; return `<div class="rel-item" style="border-color:#e0925f66" onclick="openDetail('${other}', ${state.view==='web'})"><span class="sw" style="background:#e0925f"></span>${sign}${e.extra} with ${on?on.name:other}</div>`; }).join('') : `<div class="empty-note">No known difficulty interactions.</div>`;
+  const comboHTML = combos.length ? (() => {
+    const seen = new Set();
+    const rows = [];
+    combos.forEach(e => {
+      const ids = e.ids;
+      const key = ids.sort().join('::');
+      if (seen.has(key)) return;
+      seen.add(key);
+      const others = ids.filter(i => i !== id);
+      const names = others.map(i => { const o = BY_ID[i]; return o ? o.name : i; });
+      const sign = e.extra > 0 ? '+' : '';
+      const label = names.length > 1 ? names.join(', ') + ' (all required)' : names[0];
+      const firstOther = others[0];
+      return rows.push(`<div class="rel-item" style="border-color:#e0925f66" onclick="openDetail('${firstOther}', ${state.view==='web'})"><span class="sw" style="background:#e0925f"></span>${sign}${e.extra} with ${label}</div>`);
+    });
+    return rows.join('');
+  })() : `<div class="empty-note">No known difficulty interactions.</div>`;
   const query = encodeURIComponent(c.name+' game design postmortem OR tutorial OR "GDC talk"');
   body.innerHTML = `
     <div class="badge" style="color:${dom.hex};border-color:${dom.hex}">${dom.name}${grp&&grp.kind==='group'?' \u2022 '+grp.name:''}</div>
     <h2>${c.name} ${c.diff? diffBadge(c.diff,c.diff):''}</h2>
     <div class="desc">${c.desc}</div>
-    <div class="sect"><h4>Requires</h4>${c.deps.length? c.deps.map(relItem).join('') : `<div class="empty-note">No prerequisites.</div>`}</div>
+    <div class="sect"><h4>Requires</h4>${c.deps.length? c.deps.map(d=> Array.isArray(d) ? `<div class="rel-item" style="opacity:.7;border-style:dashed"><span class="sw" style="background:var(--text-faint)"></span>Any of: ${d.map(relItem).join('')}</div>` : relItem(d)).join('') : `<div class="empty-note">No prerequisites.</div>`}</div>
     <div class="sect"><h4>Required by</h4>${(REQUIRED_BY[id]||[]).length? REQUIRED_BY[id].map(relItem).join('') : `<div class="empty-note">Nothing currently depends on this.</div>`}</div>
     <div class="sect"><h4>Related</h4>${related.length? related.map(relItem).join('') : `<div class="empty-note">None tagged.</div>`}</div>
     <div class="sect"><h4>Difficulty interactions</h4>${comboHTML}</div>
@@ -28082,27 +28105,56 @@ function diffForOption(opt){
   const selected = allSelectedIds();
   const base = opt.diff||0;
   let depsExtra = 0;
-  if (opt.parent !== 'd_genre') (opt.deps||[]).forEach(d => { if (!selected.has(d)) { const dep = BY_ID[d]; if (dep) depsExtra += dep.diff || 0; } });
+  if (opt.parent !== 'd_genre') (opt.deps||[]).forEach(d => {
+    if (Array.isArray(d)) {
+      if (!d.some(id => selected.has(id))) d.forEach(id => { const dep = BY_ID[id]; if (dep) depsExtra += dep.diff || 0; });
+    } else if (!selected.has(d)) { const dep = BY_ID[d]; if (dep) depsExtra += dep.diff || 0; }
+  });
   let lockedExtra=0; const lockedNotes=[];
-  comboEdgesFor(opt.id).forEach(e=>{ const other=e.a===opt.id?e.b:e.a; if(selected.has(other)){ lockedExtra+=e.extra; lockedNotes.push({other,extra:e.extra,note:e.note}); } });
-  const store=answerStore();
-  const answeredSteps = new Set(Object.keys(store.answers).filter(k=>isAnswered(store,k)));
-  if(studio.context==='feature'){ Object.keys(studio.design.answers).forEach(k=>{ if(isAnswered(studio.design,k)) answeredSteps.add(k); }); }
-  const perStepMaxPos={}; const perStepMaxNeg={}; const pendingNotes=[];
   comboEdgesFor(opt.id).forEach(e=>{
-    const other=e.a===opt.id?e.b:e.a; if(selected.has(other)) return;
-    const on=BY_ID[other]; if(!on) return; const stepId=on.parent;
-    if(answeredSteps.has(stepId)) return;
-    if(e.extra > 0) perStepMaxPos[stepId]=Math.max(perStepMaxPos[stepId]||0, e.extra);
-    if(e.extra < 0) perStepMaxNeg[stepId]=Math.min(perStepMaxNeg[stepId]||0, e.extra);
-    pendingNotes.push({other,extra:e.extra,note:e.note});
+    const ids=e.ids, others=ids.filter(i=>i!==opt.id);
+    if(others.every(i=>selected.has(i))){ lockedExtra+=e.extra; lockedNotes.push({other:others[0],extra:e.extra,note:e.note}); }
+  });
+  const store=answerStore();
+  const answeredSteps = new Set(Object.keys(store.answers).filter(k=>{ const s=STEPS.find(st=>st.id===k); return isAnswered(store,k) && s&&s.select==='single'; }));
+  if(studio.context==='feature'){ Object.keys(studio.design.answers).forEach(k=>{ const s=STEPS.find(st=>st.id===k); if(isAnswered(studio.design,k) && s&&s.select==='single') answeredSteps.add(k); }); }
+  const perStepMaxPos={}; const perStepMaxNeg={}; const pendingNotes=[];
+  const seenPendingCombo=new Set();
+  comboEdgesFor(opt.id).forEach(e=>{
+    const ids=e.ids, others=ids.filter(i=>i!==opt.id);
+    if(others.every(i=>selected.has(i))) return; // locked, handled above
+    const unselected = others.filter(i=>!selected.has(i));
+    const key=ids.sort().join('::');
+    if(seenPendingCombo.has(key)) return;
+    seenPendingCombo.add(key);
+    unselected.forEach(other=>{
+      const on=BY_ID[other]; if(!on) return; const stepId=on.parent;
+      if(answeredSteps.has(stepId)) return;
+      const st=STEPS.find(s=>s.id===stepId);
+      if(st&&st.select==='single'){
+        if(e.extra > 0) perStepMaxPos[stepId]=Math.max(perStepMaxPos[stepId]||0, e.extra);
+        if(e.extra < 0) perStepMaxNeg[stepId]=Math.min(perStepMaxNeg[stepId]||0, e.extra);
+      } else {
+        if(e.extra > 0) perStepMaxPos[stepId]=(perStepMaxPos[stepId]||0)+e.extra;
+        if(e.extra < 0) perStepMaxNeg[stepId]=(perStepMaxNeg[stepId]||0)+e.extra;
+      }
+      pendingNotes.push({other,extra:e.extra,note:e.note});
+    });
   });
   const maxPendingPos=Object.values(perStepMaxPos).reduce((a,b)=>a+b,0);
   const maxPendingNeg=Object.values(perStepMaxNeg).reduce((a,b)=>a+b,0);
   return {min: base+depsExtra+lockedExtra+maxPendingNeg, max: base+depsExtra+lockedExtra+maxPendingPos, lockedNotes, pendingNotes};
 }
-function isLocked(opt){ const selected=allSelectedIds(); return opt.deps.some(d=>!selected.has(d)); }
-function lockReason(opt){ return opt.deps.filter(d=>!allSelectedIds().has(d)).map(d=>BY_ID[d]?BY_ID[d].name:d).join(', '); }
+function isLocked(opt){
+  const selected=allSelectedIds();
+  return (opt.deps||[]).some(d=> Array.isArray(d) ? !d.some(id=>selected.has(id)) : !selected.has(d));
+}
+function lockReason(opt){
+  const selected=allSelectedIds();
+  return (opt.deps||[]).filter(d=> Array.isArray(d) ? !d.some(id=>selected.has(id)) : !selected.has(d))
+    .map(d=> Array.isArray(d) ? d.map(id=>BY_ID[id]?BY_ID[id].name:id).join(' or ') : (BY_ID[d]?BY_ID[d].name:d))
+    .join(', ');
+}
 
 function calculateTotalDiff() {
   let total = 0;
@@ -28114,9 +28166,10 @@ function calculateTotalDiff() {
     }
   });
   COMBO_DIFFICULTY.forEach(e => {
-    if (selected.has(e.a) && selected.has(e.b)) {
-      const cA = BY_ID[e.a], cB = BY_ID[e.b];
-      if (cA && cB && domainOf(cA).id !== 'd_genre' && domainOf(cB).id !== 'd_genre') {
+    const ids = e.ids;
+    if (ids.every(id => selected.has(id))) {
+      const allC = ids.map(id => BY_ID[id]).filter(Boolean);
+      if (allC.length >= 2 && allC.every(c => domainOf(c).id !== 'd_genre')) {
         total += e.extra;
       }
     }
@@ -28205,7 +28258,9 @@ function toggleAnswer(step, concept){
       const c = BY_ID[q.shift()];
       if(c && c.deps){
         c.deps.forEach(d=>{
-          if(!allSelectedIds().has(d)){
+          if(Array.isArray(d)){
+            // Either-or group: don't auto-select; user must pick
+          } else if(!allSelectedIds().has(d)){
             const depC = BY_ID[d]; if(!depC) return;
             const depS = STEPS.find(s=>s.id===depC.parent);
             if(depS){
@@ -28276,9 +28331,14 @@ function renderStepBody(){
       const dependents = [];
       allSel.forEach(selId => {
         const sel = BY_ID[selId];
-        if (sel && sel.deps && sel.deps.includes(vo.opt.id)) {
-          dependents.push(sel);
-        }
+        if (!sel || !sel.deps) return;
+        sel.deps.forEach(d => {
+          if (d === vo.opt.id) dependents.push(sel);
+          else if (Array.isArray(d) && d.includes(vo.opt.id)) {
+            // Either-or group: only broken if NONE of the group are selected
+            if (!d.some(id => allSel.has(id))) dependents.push(sel);
+          }
+        });
       });
       if (dependents.length) brokenDeps.set(vo.opt.id, dependents);
     }
@@ -28347,6 +28407,30 @@ function renderStepBody(){
           wrow.querySelector('.olock').style.cursor = 'pointer';
         }
         list.appendChild(wrow);
+      });
+    }
+
+    // Show either-or options inline beneath checked items with unsatisfied either-or deps
+    if (answeredIds.has(opt.id) && opt.deps) {
+      opt.deps.forEach(d => {
+        if (!Array.isArray(d)) return;
+        if (d.some(id => allSel.has(id))) return; // already satisfied
+        d.forEach(optId => {
+          const oc = BY_ID[optId]; if (!oc) return;
+          const ocStep = STEPS.find(s => s.id === oc.parent);
+          const ocChecked = allSel.has(optId);
+          const wrow = document.createElement('div');
+          wrow.className = 'opt-row' + (ocChecked ? ' checked' : '');
+          wrow.style.marginLeft = ((level + 1) * 20) + 'px';
+          wrow.style.borderLeft = '3px solid var(--accent)';
+          wrow.innerHTML = `<input type="checkbox" ${ocChecked?'checked':''}>
+            <div class="ob"><div class="oname">${oc.name} <span style="font-weight:400;font-size:10px;color:var(--text-faint)">${ocStep?' · '+ocStep.title:''}</span></div>
+            <div class="odesc">${oc.desc}</div></div>`;
+          wrow.querySelector('input').onclick = (ev) => { ev.stopPropagation(); if (ocStep) toggleAnswer(ocStep, oc); };
+          wrow.querySelector('.oname').onclick = (ev) => { ev.stopPropagation(); openDetail(optId, false); };
+          wrow.querySelector('.odesc').onclick = (ev) => { ev.stopPropagation(); openDetail(optId, false); };
+          list.appendChild(wrow);
+        });
       });
     }
   });
@@ -29560,7 +29644,9 @@ function toggleAnswerSilent(step, concept){
       var c = BY_ID[q.shift()];
       if(c && c.deps){
         c.deps.forEach(function(d){
-          if(!allSelectedIds().has(d)){
+          if(Array.isArray(d)){
+            // Either-or group: don't auto-select; user must pick
+          } else if(!allSelectedIds().has(d)){
             var depC = BY_ID[d]; if(!depC) return;
             var depS = STEPS.find(function(s){return s.id===depC.parent;});
             if(depS){
@@ -29868,19 +29954,15 @@ function validate() {
 
   // --- COMBO_DIFFICULTY checks ---
   if (typeof COMBO_DIFFICULTY !== 'undefined') {
-    const pairs = new Set();
+    const groups = new Set();
     COMBO_DIFFICULTY.forEach((e, i) => {
-      // IDs exist
-      if (!ids.has(e.a)) issues.push(`COMBO[${i}]: a='${e.a}' not found`);
-      if (!ids.has(e.b)) issues.push(`COMBO[${i}]: b='${e.b}' not found`);
-      // Self-pair
-      if (e.a === e.b) issues.push(`COMBO[${i}]: a and b are the same ('${e.a}')`);
-      // Duplicate pair (either order)
-      const key = [e.a, e.b].sort().join('::');
-      if (pairs.has(key)) {
-        issues.push(`COMBO[${i}]: duplicate pair ${e.a} <-> ${e.b}`);
-      }
-      pairs.add(key);
+      const entryIds = e.ids || [e.a, e.b];
+      if (entryIds.length < 2) issues.push(`COMBO[${i}]: need >=2 ids, got ${entryIds.length}`);
+      entryIds.forEach(id => { if (!ids.has(id)) issues.push(`COMBO[${i}]: id='${id}' not found`); });
+      if (new Set(entryIds).size !== entryIds.length) issues.push(`COMBO[${i}]: duplicate id within group`);
+      const key = entryIds.sort().join('::');
+      if (groups.has(key)) issues.push(`COMBO[${i}]: duplicate group ${key}`);
+      groups.add(key);
     });
   }
 
