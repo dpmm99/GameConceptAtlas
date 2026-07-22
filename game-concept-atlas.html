@@ -136,6 +136,9 @@ main{grid-column:2;grid-row:2;position:relative;overflow:hidden;}
 .opt-row.locked{opacity:.45;}
 .opt-row.checked{border-color:var(--accent);}
 .opt-row.inherited{opacity:.55;border-style:dashed;}
+.opt-row.broken-dep{border-color:var(--diff-high);}
+.opt-row.broken-dep .oname{color:var(--diff-high);}
+.opt-row.broken-dep .olock{color:var(--diff-high);}
 .opt-row input{margin-top:2px;flex-shrink:0;}
 .opt-row .ob{flex:1;}
 .opt-row .oname{font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
@@ -27103,8 +27106,8 @@ C('th_fantasy','Fantasy','d_theme','Magic, mythic creatures and invented worlds 
 C('th_fantasy_dark','Dark Fantasy','th_fantasy','Fantasy trappings used to tell a grim, morally bleak story.',{diff:0,rel:['fl_grim','th_horror','sy_envstory']}),
 C('th_fantasy_high','High Fantasy','th_fantasy','A fully invented world with its own cosmology and rules.',{rel:['th_fantasy_low','th_fantasy_dark','sy_narrative','sy_envstory'],persp:['designer','artist','producer'],diff:1}),
 C('th_fantasy_low','Low Fantasy','th_fantasy','A mostly-real world with only faint traces of magic.',{rel:['th_fantasy_high','th_fantasy_dark','th_historical'],diff:0,persp:['designer','artist']}),
-C('th_fantasy_fairytale','Fairy Tale','th_fantasy','Reimagined folklore and children\u2019s story tropes as setting material.',{rel:['th_mythological'],diff:2}),
-C('th_fantasy_urban','Urban Fantasy','th_fantasy','Magic hidden within or layered over a contemporary city setting.',{rel:['th_fantasy_low','th_modern'],diff:3}),
+C('th_fantasy_fairytale','Fairy Tale','th_fantasy','Reimagined folklore and children\u2019s story tropes as setting material.',{rel:['th_mythological'],diff:0}),
+C('th_fantasy_urban','Urban Fantasy','th_fantasy','Magic hidden within or layered over a contemporary city setting.',{rel:['th_fantasy_low','th_modern'],diff:1}),
 C('th_superhero','Superhero','d_theme','A power-fantasy setting built around costumed heroes and villains.',{rel:['mc_powersets','mc_charcustom','g_action'],diff:2}),
 C('th_superhero_identity','Secret Identity','th_superhero','A dual-life tension between an ordinary self and a heroic one.',{deps:['sy_narrative'],rel:['mc_costumes','dm_vis_asymmetric','mc_nemesis'],diff:0,persp:['designer','artist','player']}),
 C('th_superhero_legacy','Legacy Mantle','th_superhero','A hero identity passed between successive characters over time.',{rel:['mc_legacy','mc_charprogression'],diff:0,persp:['designer','producer']}),
@@ -27114,10 +27117,10 @@ C('th_superhero_scale_cosmic','Cosmic-Level','th_superhero','The hero protects m
 C('th_superhero_villains','Supervillain Rivals','th_superhero','Recurring antagonists whose schemes structure the ongoing story.',{deps:['sy_narrative'],rel:['mc_nemesis','th_superhero_identity'],diff:1}),
 C('th_scifi','Sci-Fi','d_theme','Speculative technology and space as the driving premise.',{rel:['th_cyberpunk','th_postapoc','g_vehiclecombat'],diff:3,persp:['artist','designer']}),
 C('th_scifi_contact','First Contact','th_scifi','The premise centers on encountering a genuinely alien other.',{deps:[],rel:['sy_narrative'],diff:0}),
-C('th_scifi_alien','Alien Invasion','th_scifi','Hostile extraterrestrial forces threatening a familiar world.',{diff:2}),
+C('th_scifi_alien','Alien Invasion','th_scifi','Hostile extraterrestrial forces threatening a familiar world.',{diff:0}),
 C('th_scifi_hard','Hard Sci-Fi','th_scifi','Speculation grounded closely in plausible science.',{deps:[],rel:['th_scifi_opera','g_simulation'],diff:0,persp:['designer','programmer','player']}),
 C('th_scifi_opera','Space Opera','th_scifi','Sweeping, dramatic adventure across a galaxy-spanning canvas.',{diff:0,rel:['sy_narrative','g_rpg','g_rts','g_simulation']}),
-C('th_scifi_mecha','Mecha','th_scifi','Humanoid piloted war machines as the defining visual and narrative element.',{diff:2,rel:['g_vehiclecombat']}),
+C('th_scifi_mecha','Mecha','th_scifi','Humanoid piloted war machines as the defining visual and narrative element.',{diff:0,rel:['g_vehiclecombat']}),
 C('th_steampunk','Steampunk','d_theme','Retro-futurism built on steam, brass and clockwork technology.',{diff:3,rel:['th_cyberpunk','th_historical','th_scifi'],persp:['artist','designer']}),
 C('th_cyberpunk','Cyberpunk','d_theme','High-tech, low-life futures dominated by corporations and networks.',{deps:[],rel:['th_scifi','th_noir','mc_enhancement'],diff:3}),
 C('th_postapoc','Post-Apocalyptic','d_theme','A ruined world of scarcity, remnants and rebuilding.',{rel:['g_survival','mc_crafting','mc_basebuild','th_scifi','th_horror'],diff:3}),
@@ -27520,7 +27523,7 @@ C('sy_anticheat','Anti-cheat','sg_engine','Detecting and preventing unauthorized
 C('sy_procgen','Procedural generation','sg_worldsim','Algorithmically generating content instead of hand-authoring all of it.',{deps:[],rel:['g_roguelite','mc_open_world','sy_leveldesign'],diff:7}),
 C('sy_colliders','Colliders','sg_worldsim','Physical collision volumes that define what can touch or block what.',{deps:[],rel:['sy_leveldesign','sy_procgen','sy_3danim','sy_pathing'],diff:4,persp:['programmer','designer','qa']}),
 C('sy_pathing','Pathing','sg_worldsim','The navigation graphs and search algorithms AI use to move through a space.',{deps:['sy_colliders'],rel:['sy_enemyai','sy_leveldesign','sy_procgen'],diff:7,persp:['programmer','designer','qa']}),
-C('sy_enemyai','Enemy AI','sg_worldsim','Decision-making systems that drive non-player combatants.',{deps:['sy_pathing'],rel:['mc_pve','mc_nemesis','sy_debugtools','mc_realtime_combat'],diff:7,persp:['programmer','designer','qa']}),
+C('sy_enemyai','Enemy AI','sg_worldsim','Decision-making systems that drive non-player combatants.',{deps:[],rel:['sy_pathing','mc_pve','mc_nemesis','sy_debugtools','mc_realtime_combat'],diff:7,persp:['programmer','designer','qa']}),
 C('sy_scripting','Scripting system for story events','sg_worldsim','Tools that let designers trigger sequences without engine code.',{deps:[],rel:['sy_narrative','sy_tutorials'],diff:8}),
 C('sy_setpieces','Set pieces','sg_worldsim','Bespoke scripted moments/sets of objects built for maximum spectacle.',{deps:['sy_scripting'],rel:['sy_leveldesign','sy_narrative','sy_tutorials'],diff:6,persp:['designer','programmer','artist','producer']}),
 C('sy_leveldesign','Level design','sg_worldsim','Crafting the layout and pacing of playable maps and spaces.',{deps:[],rel:['sy_setpieces','sy_procgen','sy_enemyai'],diff:4,persp:['designer','artist','programmer','qa']}),
@@ -28265,6 +28268,22 @@ function renderStepBody(){
   const sMin = diffs.length ? Math.min(...diffs) : 0;
   const sMax = diffs.length ? Math.max(...diffs) : 0;
 
+  // Build map of unchecked options -> checked items that depend on them (broken deps)
+  const stepOptIds = new Set(optionsFor(step).map(o => o.id));
+  const brokenDeps = new Map();
+  visibleOpts.forEach(vo => {
+    if (!answeredIds.has(vo.opt.id)) {
+      const dependents = [];
+      allSel.forEach(selId => {
+        const sel = BY_ID[selId];
+        if (sel && sel.deps && sel.deps.includes(vo.opt.id)) {
+          dependents.push(sel);
+        }
+      });
+      if (dependents.length) brokenDeps.set(vo.opt.id, dependents);
+    }
+  });
+
   visibleOpts.forEach(vo => {
     const opt = vo.opt;
     const level = vo.level;
@@ -28306,6 +28325,30 @@ function renderStepBody(){
     row.querySelector('.odesc').onclick = (ev) => { ev.stopPropagation(); openDetail(opt.id, false); };
     row.querySelector('input').onclick = (ev) => { if (inherited || isMutexed) ev.preventDefault(); else toggleAnswer(step, opt); };
     list.appendChild(row);
+
+    // Show broken dependency warnings beneath unchecked items
+    const dependents = brokenDeps.get(opt.id);
+    if (dependents) {
+      dependents.forEach(dep => {
+        const depStep = STEPS.find(s => s.id === dep.parent);
+        const wrow = document.createElement('div');
+        wrow.className = 'opt-row broken-dep';
+        wrow.style.marginLeft = ((level + 1) * 20) + 'px';
+        wrow.style.borderLeft = '3px solid var(--diff-high)';
+        wrow.innerHTML = `<input type="checkbox" checked>
+          <div class="ob"><div class="oname">${dep.name} <span style="font-weight:400;font-size:10px;color:var(--text-faint)">${depStep?'· '+depStep.title:''}</span></div>
+          <div class="odesc">${dep.desc}</div>
+          <div class="olock">\u26a0\ufe0f Requires ${opt.name} which is unchecked</div></div>`;
+        wrow.querySelector('input').onclick = (ev) => { ev.stopPropagation(); toggleAnswer(depStep, dep); };
+        wrow.querySelector('.oname').onclick = (ev) => { ev.stopPropagation(); openDetail(dep.id, false); };
+        wrow.querySelector('.odesc').onclick = (ev) => { ev.stopPropagation(); openDetail(dep.id, false); };
+        if (depStep) {
+          wrow.querySelector('.olock').onclick = (ev) => { ev.stopPropagation(); studio.currentStep = depStep.id; renderStepNav(); renderStepBody(); };
+          wrow.querySelector('.olock').style.cursor = 'pointer';
+        }
+        list.appendChild(wrow);
+      });
+    }
   });
   content.appendChild(list);
 
@@ -29555,7 +29598,7 @@ function exportMarkdown(){
   DOMAINS.forEach(function(dom){
     var domainSteps = STEPS.filter(function(s){return s.domain.id===dom.id;});
     var hasAny = false;
-    domainSteps.forEach(function(s){var a=store.answers[s.id];if(a&&a.length>0)hasAny=true;});
+    domainSteps.forEach(function(s){var a=store.answers[s.id];if((a&&a.length>0)||store.notes[s.id]?.trim().length)hasAny=true;});
     if(!hasAny) return;
     lines.push('## '+dom.name);
     domainSteps.forEach(function(s){
