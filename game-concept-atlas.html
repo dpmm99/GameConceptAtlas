@@ -27021,7 +27021,7 @@ function C(id,name,parent,desc,o){
 const CONCEPTS = [
 /* ================= GENRE (parent: d_genre) ================= */
 C('g_action','Action','d_genre','Fast reflex-driven challenges resolved through direct input.',{deps:['dm_pace_realtime'],rel:['g_platformer','g_beatemup','g_fighting','g_fps','g_shooter','g_stealth'],diff:4}),
-C('g_beatemup','Beat-\u2019em-up','d_action','Brawls against waves of enemies in close quarters.',{deps:['mc_realtime_combat','sy_enemyai'],rel:['g_fighting','mc_coop'],diff:0}),
+C('g_beatemup','Beat-\u2019em-up','g_action','Brawls against waves of enemies in close quarters.',{deps:['mc_realtime_combat','sy_enemyai'],rel:['g_fighting','mc_coop'],diff:0}),
 C('g_fighting','Fighting','g_action','One-on-one combat built on frame-precise move sets.',{deps:['mc_realtime_combat'],rel:['mc_pvp','mc_pvp_arenas'],diff:4}),
 C('g_hackslash','Hack-and-Slash','g_action','Fast, combo-driven melee combat against large numbers of weak enemies.',{deps:['mc_realtime_combat'],rel:['g_beatemup','mc_combos'],diff:1}),
 C('g_pinball','Pinball','g_action','Physics-driven ball control across a reactive table of targets.',{deps:['sy_colliders'],rel:['g_arcade','g_simulation'],diff:1}),
